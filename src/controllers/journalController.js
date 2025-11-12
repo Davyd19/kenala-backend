@@ -1,4 +1,4 @@
-const { Journal, Mission } = require('../models');
+const { Journal, Mission, User, Badge, UserBadge } = require('../models');
 const { Op } = require('sequelize');
 
 // Get all journals for user
@@ -14,7 +14,6 @@ exports.getJournals = async (req, res) => {
       order: [['date', 'DESC']]
     });
 
-    // PERBAIKAN: Kirim array-nya langsung
     res.json(journals);
   } catch (error) {
     console.error('Get journals error:', error);
@@ -40,7 +39,6 @@ exports.getJournal = async (req, res) => {
       return res.status(404).json({ error: 'Journal not found' });
     }
 
-    // PERBAIKAN: Kirim objek-nya langsung
     res.json(journal);
   } catch (error) {
     console.error('Get journal error:', error);
@@ -52,6 +50,7 @@ exports.getJournal = async (req, res) => {
 exports.createJournal = async (req, res) => {
   try {
     const { title, story, image_url, mission_id, location_name, latitude, longitude } = req.body;
+    const userId = req.user.id;
 
     // Validation
     if (!title || !story) {
@@ -59,7 +58,7 @@ exports.createJournal = async (req, res) => {
     }
 
     const journal = await Journal.create({
-      user_id: req.user.id,
+      user_id: userId,
       title,
       story,
       image_url,
@@ -70,13 +69,51 @@ exports.createJournal = async (req, res) => {
       date: new Date()
     });
 
-    // PERBAIKAN: Kirim objek-nya langsung
+    // --- LOGIKA BARU: CEK BADGE UNTUK JURNAL ---
+    await checkJournalBadges(userId);
+    // ------------------------------------------
+
     res.status(201).json(journal);
   } catch (error) {
     console.error('Create journal error:', error);
     res.status(500).json({ error: 'Failed to create journal' });
   }
 };
+
+// Fungsi helper untuk badge jurnal
+async function checkJournalBadges(userId) {
+  try {
+    const user = await User.findByPk(userId, { include: 'badges' });
+    const userBadgeIds = user.badges.map(b => b.id);
+
+    // 1. Dapatkan jumlah total jurnal pengguna
+    const journalCount = await Journal.count({ where: { user_id: userId } });
+
+    // 2. Dapatkan semua badge 'journals_written' yang belum dimiliki pengguna
+    const journalBadges = await Badge.findAll({
+      where: {
+        requirement_type: 'journals_written',
+        id: { [Op.notIn]: userBadgeIds }
+      }
+    });
+
+    const badgesToAward = [];
+    
+    // 3. Cek apakah syarat terpenuhi
+    for (const badge of journalBadges) {
+      if (journalCount >= badge.requirement_value) {
+        badgesToAward.push(badge.id);
+      }
+    }
+
+    // 4. Berikan badge
+    if (badgesToAward.length > 0) {
+      await user.addBadges(badgesToAward);
+    }
+  } catch (error) {
+    console.error('Error awarding journal badges:', error);
+  }
+}
 
 // Update journal
 exports.updateJournal = async (req, res) => {
@@ -100,7 +137,6 @@ exports.updateJournal = async (req, res) => {
       image_url: image_url !== undefined ? image_url : journal.image_url
     });
     
-    // Ambil data terbaru setelah update untuk dikirim kembali
     const updatedJournal = await Journal.findByPk(journal.id, {
       include: [{
         model: Mission,
@@ -108,7 +144,6 @@ exports.updateJournal = async (req, res) => {
       }]
     });
 
-    // PERBAIKAN: Kirim objek-nya langsung
     res.json(updatedJournal);
   } catch (error) {
     console.error('Update journal error:', error);
@@ -132,8 +167,6 @@ exports.deleteJournal = async (req, res) => {
 
     await journal.destroy();
 
-    // PERBAIKAN: Kirim status 204 (No Content)
-    // Ini sesuai dengan ekspektasi Response<Unit> di Android
     res.status(204).send();
   } catch (error) {
     console.error('Delete journal error:', error);

@@ -1,5 +1,9 @@
-const { Mission, MissionCompletion, User } = require('../models');
+const { Mission, MissionCompletion, User, Badge, UserBadge } = require('../models');
 const { Op } = require('sequelize');
+
+// Fungsi helper untuk menghitung tanggal
+const getToday = () => new Date().toISOString().split('T')[0];
+const getYesterday = () => new Date(Date.now() - 86400000).toISOString().split('T')[0];
 
 // Get missions with filters
 exports.getMissions = async (req, res) => {
@@ -38,7 +42,6 @@ exports.getMissions = async (req, res) => {
       limit: 20
     });
 
-    // PERBAIKAN: Kirim array-nya langsung
     res.json(missions);
   } catch (error) {
     console.error('Get missions error:', error);
@@ -70,7 +73,6 @@ exports.getRandomMission = async (req, res) => {
     // Select random mission
     const randomMission = missions[Math.floor(Math.random() * missions.length)];
 
-    // PERBAIKAN: Kirim objek-nya langsung
     res.json(randomMission);
   } catch (error) {
     console.error('Get random mission error:', error);
@@ -87,7 +89,6 @@ exports.getMission = async (req, res) => {
       return res.status(404).json({ error: 'Mission not found' });
     }
 
-    // PERBAIKAN: Kirim objek-nya langsung
     res.json(mission);
   } catch (error) {
     console.error('Get mission error:', error);
@@ -99,6 +100,7 @@ exports.getMission = async (req, res) => {
 exports.completeMission = async (req, res) => {
   try {
     const { mission_id } = req.body;
+    const userId = req.user.id;
 
     // Check if mission exists
     const mission = await Mission.findByPk(mission_id);
@@ -109,7 +111,7 @@ exports.completeMission = async (req, res) => {
     // Check if already completed
     const existingCompletion = await MissionCompletion.findOne({
       where: {
-        user_id: req.user.id,
+        user_id: userId,
         mission_id: mission_id
       }
     });
@@ -120,26 +122,124 @@ exports.completeMission = async (req, res) => {
 
     // Create completion record
     await MissionCompletion.create({
-      user_id: req.user.id,
+      user_id: userId,
       mission_id: mission_id
     });
 
-    // Update user stats
-    await User.increment(
-      {
-        total_missions: 1,
-        total_distance: mission.estimated_distance || 0
-      },
-      { where: { id: req.user.id } }
-    );
+    // --- LOGIKA BARU: UPDATE STATS PENGGUNA (TERMASUK STREAK) ---
+    const user = await User.findByPk(userId);
+    const today = getToday();
+    const yesterday = getYesterday();
 
-    // PERBAIKAN: Kirim status 204 (No Content) sesuai ekspektasi ApiService.kt (Response<Unit>)
+    let updateData = {
+      total_missions: user.total_missions + 1,
+      total_distance: user.total_distance + (mission.estimated_distance || 0)
+    };
+
+    // Perbarui streak jika misi diselesaikan di hari yang berbeda
+    if (user.last_active_date !== today) {
+      updateData.total_active_days = user.total_active_days + 1;
+      updateData.last_active_date = today;
+
+      if (user.last_active_date === yesterday) {
+        // Lanjutkan streak
+        updateData.current_streak = user.current_streak + 1;
+      } else {
+        // Reset streak
+        updateData.current_streak = 1;
+      }
+      
+      // Perbarui streak terpanjang jika perlu
+      if (updateData.current_streak > user.longest_streak) {
+        updateData.longest_streak = updateData.current_streak;
+      }
+    }
+
+    // Terapkan pembaruan ke user
+    await user.update(updateData);
+    
+    // --- LOGIKA BARU: CEK DAN BERIKAN BADGE ---
+    await checkAndAwardBadges(user, mission);
+    // ------------------------------------------
+
     res.status(204).send();
   } catch (error) {
     console.error('Complete mission error:', error);
     res.status(500).json({ error: 'Failed to complete mission' });
   }
 };
+
+// Fungsi helper untuk badge
+async function checkAndAwardBadges(user, completedMission) {
+  try {
+    // 1. Muat ulang user dengan data badge terbaru
+    await user.reload({ include: 'badges' });
+    const userBadgeIds = user.badges.map(b => b.id);
+    
+    // 2. Ambil semua badge yang mungkin didapat
+    const badgesToCheck = await Badge.findAll({
+      where: {
+        id: { [Op.notIn]: userBadgeIds } // Hanya cek badge yang belum dimiliki
+      }
+    });
+
+    const badgesToAward = [];
+
+    // 3. Cek setiap badge
+    for (const badge of badgesToCheck) {
+      let shouldAward = false;
+      
+      switch (badge.requirement_type) {
+        case 'missions_completed':
+          if (user.total_missions >= badge.requirement_value) {
+            shouldAward = true;
+          }
+          break;
+        case 'distance_traveled':
+          if (user.total_distance >= badge.requirement_value) {
+            shouldAward = true;
+          }
+          break;
+        case 'streak_days':
+          if (user.current_streak >= badge.requirement_value) {
+            shouldAward = true;
+          }
+          break;
+        case 'category_specific':
+          // Hanya cek jika misi yang baru selesai sesuai dengan kategori badge
+          if (completedMission && badge.requirement_category === completedMission.category) {
+            // Hitung total misi dalam kategori ini
+            const categoryCount = await MissionCompletion.count({
+              where: { user_id: user.id },
+              include: [{
+                model: Mission,
+                as: 'mission',
+                where: { category: badge.requirement_category }
+              }]
+            });
+            
+            if (categoryCount >= badge.requirement_value) {
+              shouldAward = true;
+            }
+          }
+          break;
+        // 'journals_written' akan ditangani di journalController
+      }
+
+      if (shouldAward) {
+        badgesToAward.push(badge.id);
+      }
+    }
+
+    // 4. Berikan badge baru
+    if (badgesToAward.length > 0) {
+      await user.addBadges(badgesToAward);
+    }
+    
+  } catch (error) {
+    console.error('Error awarding badges:', error);
+  }
+}
 
 
 // --- FUNGSI BARU UNTUK ADMIN ---
@@ -187,7 +287,6 @@ exports.createMission = async (req, res) => {
       is_active: true // Default
     });
 
-    // PERBAIKAN (Admin): Kirim objek-nya langsung
     res.status(201).json(mission);
   } catch (error) {
     console.error('Create mission error:', error);
@@ -211,7 +310,6 @@ exports.updateMission = async (req, res) => {
     // Update misi dengan data dari req.body
     await mission.update(req.body);
 
-    // PERBAIKAN (Admin): Kirim objek-nya langsung
     res.json(mission);
   } catch (error) {
     console.error('Update mission error:', error);
@@ -234,7 +332,6 @@ exports.deleteMission = async (req, res) => {
 
     await mission.destroy();
 
-    // PERBAIKAN (Admin): Kirim status 204 (No Content)
     res.status(204).send();
   } catch (error)
     {

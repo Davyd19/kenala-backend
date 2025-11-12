@@ -14,6 +14,11 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// --- TAMBAHAN BARU ---
+// Membuat folder 'uploads' menjadi statis (bisa diakses publik)
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+// ---------------------
+
 // Request logging middleware
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
@@ -31,6 +36,11 @@ app.use('/api/profile', require('./routes/profile'));
 app.use('/api/tracking', require('./routes/tracking'));
 app.use('/api/admin', require('./routes/admin')); // Admin routes
 
+// --- TAMBAHAN BARU ---
+// Menambahkan rute untuk upload
+app.use('/api/upload', require('./routes/upload'));
+// ---------------------
+
 // Admin dashboard route
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, '../admin_dashboard.html'));
@@ -44,6 +54,14 @@ app.get('/api/health', (req, res) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Error:', err);
+  // Tangani error dari Multer
+  if (err instanceof require('multer').MulterError) {
+    return res.status(400).json({ error: err.message });
+  }
+  if (err.message === 'Hanya file .jpeg, .jpg, atau .png yang diizinkan') {
+    return res.status(400).json({ error: err.message });
+  }
+  
   res.status(err.status || 500).json({
     error: err.message || 'Internal server error'
   });
@@ -66,6 +84,15 @@ const startServer = async () => {
     // Sync database (use { force: true } to drop and recreate tables - ONLY in development!)
     await db.sequelize.sync({ alter: true }); // alter: true will update tables without dropping
     console.log('Database synchronized.');
+
+    // --- TAMBAHAN BARU: Buat folder 'uploads' jika belum ada ---
+    const fs = require('fs');
+    const uploadDir = path.join(__dirname, '../uploads');
+    if (!fs.existsSync(uploadDir)){
+        fs.mkdirSync(uploadDir);
+        console.log('Uploads directory created.');
+    }
+    // -----------------------------------------------------
 
     // Start server
     app.listen(PORT, () => {
