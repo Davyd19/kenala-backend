@@ -14,7 +14,8 @@ exports.getJournals = async (req, res) => {
       order: [['date', 'DESC']]
     });
 
-    res.json({ journals });
+    // PERBAIKAN: Kirim array-nya langsung
+    res.json(journals);
   } catch (error) {
     console.error('Get journals error:', error);
     res.status(500).json({ error: 'Failed to fetch journals' });
@@ -39,7 +40,8 @@ exports.getJournal = async (req, res) => {
       return res.status(404).json({ error: 'Journal not found' });
     }
 
-    res.json({ journal });
+    // PERBAIKAN: Kirim objek-nya langsung
+    res.json(journal);
   } catch (error) {
     console.error('Get journal error:', error);
     res.status(500).json({ error: 'Failed to fetch journal' });
@@ -68,7 +70,8 @@ exports.createJournal = async (req, res) => {
       date: new Date()
     });
 
-    res.status(201).json({ journal });
+    // PERBAIKAN: Kirim objek-nya langsung
+    res.status(201).json(journal);
   } catch (error) {
     console.error('Create journal error:', error);
     res.status(500).json({ error: 'Failed to create journal' });
@@ -96,8 +99,17 @@ exports.updateJournal = async (req, res) => {
       story: story || journal.story,
       image_url: image_url !== undefined ? image_url : journal.image_url
     });
+    
+    // Ambil data terbaru setelah update untuk dikirim kembali
+    const updatedJournal = await Journal.findByPk(journal.id, {
+      include: [{
+        model: Mission,
+        as: 'mission'
+      }]
+    });
 
-    res.json({ journal });
+    // PERBAIKAN: Kirim objek-nya langsung
+    res.json(updatedJournal);
   } catch (error) {
     console.error('Update journal error:', error);
     res.status(500).json({ error: 'Failed to update journal' });
@@ -120,7 +132,9 @@ exports.deleteJournal = async (req, res) => {
 
     await journal.destroy();
 
-    res.json({ message: 'Journal deleted successfully' });
+    // PERBAIKAN: Kirim status 204 (No Content)
+    // Ini sesuai dengan ekspektasi Response<Unit> di Android
+    res.status(204).send();
   } catch (error) {
     console.error('Delete journal error:', error);
     res.status(500).json({ error: 'Failed to delete journal' });

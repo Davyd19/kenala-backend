@@ -30,16 +30,16 @@ exports.register = async (req, res) => {
     // Generate token
     const token = generateToken(user.id);
 
+    // --- PERUBAHAN DI SINI ---
+    // Konversi instance Sequelize ke objek JSON
+    const userObject = user.toJSON();
+    // Hapus password dari objek yang akan dikirim
+    delete userObject.password;
+    // -------------------------
+
     res.status(201).json({
       token,
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        level: user.level,
-        total_missions: user.total_missions,
-        current_streak: user.current_streak
-      }
+      user: userObject // Kirim objek user lengkap (tanpa password)
     });
   } catch (error) {
     console.error('Register error:', error);
@@ -72,17 +72,14 @@ exports.login = async (req, res) => {
     // Generate token
     const token = generateToken(user.id);
 
+    // Konversi instance Sequelize ke objek JSON
+    const userObject = user.toJSON();
+    // Hapus password dari objek yang akan dikirim
+    delete userObject.password;
+
     res.json({
       token,
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        level: user.level,
-        total_missions: user.total_missions,
-        current_streak: user.current_streak,
-        profile_image_url: user.profile_image_url
-      }
+      user: userObject // Kirim objek user lengkap (tanpa password)
     });
   } catch (error) {
     console.error('Login error:', error);

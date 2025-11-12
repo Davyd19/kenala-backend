@@ -38,7 +38,8 @@ exports.getMissions = async (req, res) => {
       limit: 20
     });
 
-    res.json({ missions });
+    // PERBAIKAN: Kirim array-nya langsung
+    res.json(missions);
   } catch (error) {
     console.error('Get missions error:', error);
     res.status(500).json({ error: 'Failed to fetch missions' });
@@ -69,7 +70,8 @@ exports.getRandomMission = async (req, res) => {
     // Select random mission
     const randomMission = missions[Math.floor(Math.random() * missions.length)];
 
-    res.json({ mission: randomMission });
+    // PERBAIKAN: Kirim objek-nya langsung
+    res.json(randomMission);
   } catch (error) {
     console.error('Get random mission error:', error);
     res.status(500).json({ error: 'Failed to get mission' });
@@ -85,7 +87,8 @@ exports.getMission = async (req, res) => {
       return res.status(404).json({ error: 'Mission not found' });
     }
 
-    res.json({ mission });
+    // PERBAIKAN: Kirim objek-nya langsung
+    res.json(mission);
   } catch (error) {
     console.error('Get mission error:', error);
     res.status(500).json({ error: 'Failed to fetch mission' });
@@ -130,7 +133,8 @@ exports.completeMission = async (req, res) => {
       { where: { id: req.user.id } }
     );
 
-    res.json({ message: 'Mission completed successfully' });
+    // PERBAIKAN: Kirim status 204 (No Content) sesuai ekspektasi ApiService.kt (Response<Unit>)
+    res.status(204).send();
   } catch (error) {
     console.error('Complete mission error:', error);
     res.status(500).json({ error: 'Failed to complete mission' });
@@ -183,7 +187,8 @@ exports.createMission = async (req, res) => {
       is_active: true // Default
     });
 
-    res.status(201).json({ mission });
+    // PERBAIKAN (Admin): Kirim objek-nya langsung
+    res.status(201).json(mission);
   } catch (error) {
     console.error('Create mission error:', error);
     res.status(500).json({ error: 'Gagal membuat misi baru' });
@@ -206,7 +211,8 @@ exports.updateMission = async (req, res) => {
     // Update misi dengan data dari req.body
     await mission.update(req.body);
 
-    res.json({ mission });
+    // PERBAIKAN (Admin): Kirim objek-nya langsung
+    res.json(mission);
   } catch (error) {
     console.error('Update mission error:', error);
     res.status(500).json({ error: 'Gagal memperbarui misi' });
@@ -228,7 +234,8 @@ exports.deleteMission = async (req, res) => {
 
     await mission.destroy();
 
-    res.json({ message: 'Misi berhasil dihapus' });
+    // PERBAIKAN (Admin): Kirim status 204 (No Content)
+    res.status(204).send();
   } catch (error)
     {
     console.error('Delete mission error:', error);
