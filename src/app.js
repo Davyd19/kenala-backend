@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 
 const db = require('./models');
@@ -19,12 +20,21 @@ app.use((req, res, next) => {
   next();
 });
 
-// Routes
+// Serve admin dashboard
+app.use(express.static(path.join(__dirname, '../')));
+
+// API Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/journals', require('./routes/journals'));
 app.use('/api/missions', require('./routes/missions'));
 app.use('/api/profile', require('./routes/profile'));
-app.use('/api/tracking', require('./routes/tracking')); // Route baru untuk tracking
+app.use('/api/tracking', require('./routes/tracking'));
+app.use('/api/admin', require('./routes/admin')); // Admin routes
+
+// Admin dashboard route
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, '../admin_dashboard.html'));
+});
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -61,6 +71,7 @@ const startServer = async () => {
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
       console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`Admin dashboard: http://localhost:${PORT}/admin`);
     });
   } catch (error) {
     console.error('Unable to start server:', error);

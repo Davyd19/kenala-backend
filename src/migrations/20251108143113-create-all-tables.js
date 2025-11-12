@@ -377,5 +377,18 @@ module.exports = {
     await queryInterface.dropTable('badges');
     await queryInterface.dropTable('missions');
     await queryInterface.dropTable('users');
+  },
+
+  up: async (queryInterface, Sequelize) => {
+    await queryInterface.addColumn('users', 'is_admin', {
+      type: Sequelize.BOOLEAN,
+      defaultValue: false,
+      allowNull: false
+    });
+  },
+
+  down: async (queryInterface, Sequelize) => {
+    await queryInterface.removeColumn('users', 'is_admin');
   }
+
 };

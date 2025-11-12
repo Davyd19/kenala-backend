@@ -7,38 +7,21 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #a8a8a8;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #888;
-        }
-        /* Mengganti warna primary-blue dan accent-yellow dari app Anda */
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #a8a8a8; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #888; }
         .bg-primary-blue { background-color: #002364; }
         .text-primary-blue { color: #002364; }
         .bg-deep-blue { background-color: #001845; }
         .text-accent-yellow { color: #F8C104; }
         .bg-accent-yellow { background-color: #F8C104; }
         .hover\:bg-accent-yellow-dark:hover { background-color: #F9A825; }
-        .border-accent-yellow { border-color: #F8C104; }
-        .ring-accent-yellow:focus { ring-color: #F8C104; }
     </style>
 </head>
 <body class="h-full">
-
-    <!-- Kontainer Login -->
+    <!-- Login Screen -->
     <div id="login-screen" class="flex min-h-full items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div class="w-full max-w-md space-y-8">
             <div>
@@ -49,17 +32,17 @@
                     Silakan login dengan akun admin Anda
                 </p>
             </div>
-            <form id="login-form" class="mt-8 space-y-6" action="#" method="POST">
+            <form id="login-form" class="mt-8 space-y-6">
                 <div class="space-y-4 rounded-md shadow-sm">
                     <div>
                         <label for="email-address" class="sr-only">Email</label>
-                        <input id="email-address" name="email" type="email" autocomplete="email" required
+                        <input id="email-address" name="email" type="email" required
                             class="relative block w-full appearance-none rounded-lg border border-gray-300 px-3 py-3 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-accent-yellow focus:outline-none focus:ring-accent-yellow sm:text-sm"
                             placeholder="Email">
                     </div>
                     <div>
                         <label for="password" class="sr-only">Password</label>
-                        <input id="password" name="password" type="password" autocomplete="current-password" required
+                        <input id="password" name="password" type="password" required
                             class="relative block w-full appearance-none rounded-lg border border-gray-300 px-3 py-3 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-accent-yellow focus:outline-none focus:ring-accent-yellow sm:text-sm"
                             placeholder="Password">
                     </div>
@@ -75,7 +58,7 @@
         </div>
     </div>
 
-    <!-- Kontainer Dashboard Utama (disembunyikan awalnya) -->
+    <!-- Dashboard Main -->
     <div id="dashboard" class="hidden h-full md:flex">
         <!-- Sidebar -->
         <nav class="flex w-64 flex-col bg-deep-blue text-white">
@@ -83,86 +66,205 @@
                 KENALA ADMIN
             </div>
             <div class="flex-1 space-y-2 p-4">
-                <a href="#" class="flex items-center space-x-3 rounded-lg bg-primary-blue p-3 font-medium">
+                <a href="#" data-page="dashboard" class="nav-link flex items-center space-x-3 rounded-lg bg-primary-blue p-3 font-medium">
                     <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                     <span>Dashboard</span>
                 </a>
-                <a href="#" class="flex items-center space-x-3 rounded-lg p-3 hover:bg-primary-blue">
+                <a href="#" data-page="missions" class="nav-link flex items-center space-x-3 rounded-lg p-3 hover:bg-primary-blue">
                     <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                     <span>Manajemen Misi</span>
                 </a>
-                <a href="#" class="flex items-center space-x-3 rounded-lg p-3 opacity-60 hover:bg-primary-blue">
+                <a href="#" data-page="clues" class="nav-link flex items-center space-x-3 rounded-lg p-3 hover:bg-primary-blue">
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+                    <span>Manajemen Clue</span>
+                </a>
+                <a href="#" data-page="users" class="nav-link flex items-center space-x-3 rounded-lg p-3 hover:bg-primary-blue">
                     <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                     <span>Manajemen User</span>
                 </a>
-                 <a href="#" class="flex items-center space-x-3 rounded-lg p-3 opacity-60 hover:bg-primary-blue">
+                <a href="#" data-page="badges" class="nav-link flex items-center space-x-3 rounded-lg p-3 hover:bg-primary-blue">
                     <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
                     <span>Manajemen Badge</span>
                 </a>
-                <a href="#" class="flex items-center space-x-3 rounded-lg p-3 opacity-60 hover:bg-primary-blue">
+                <a href="#" data-page="journals" class="nav-link flex items-center space-x-3 rounded-lg p-3 hover:bg-primary-blue">
                     <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                     <span>Moderasi Jurnal</span>
                 </a>
             </div>
-        </nav>
-
-        <!-- Konten Utama -->
-        <main class="flex-1 overflow-y-auto bg-gray-100 p-8">
-            <div class="mb-6 flex items-center justify-between">
-                <h1 class="text-3xl font-bold text-primary-blue">Manajemen Misi (Tempat)</h1>
-                <button id="show-modal-btn"
-                    class="rounded-lg bg-accent-yellow py-2 px-4 font-medium text-deep-blue hover:bg-accent-yellow-dark">
-                    + Tambah Misi Baru
+            <div class="border-t border-gray-700 p-4">
+                <button id="logout-btn" class="flex w-full items-center space-x-3 rounded-lg p-3 hover:bg-primary-blue">
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                    <span>Logout</span>
                 </button>
             </div>
+        </nav>
 
-            <!-- Tabel Misi -->
-            <div class="overflow-hidden rounded-lg bg-white shadow">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Nama Misi</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Kategori</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Lokasi</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="mission-table-body" class="divide-y divide-gray-200 bg-white">
-                        <!-- Data akan diisi oleh JavaScript -->
-                    </tbody>
-                </table>
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto bg-gray-100 p-8">
+            <!-- Dashboard Overview -->
+            <div id="page-dashboard" class="page-content">
+                <h1 class="mb-6 text-3xl font-bold text-primary-blue">Dashboard Overview</h1>
+                
+                <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+                    <div class="rounded-lg bg-white p-6 shadow">
+                        <div class="text-sm text-gray-600">Total Misi</div>
+                        <div class="text-3xl font-bold text-primary-blue" id="stat-missions">0</div>
+                    </div>
+                    <div class="rounded-lg bg-white p-6 shadow">
+                        <div class="text-sm text-gray-600">Total User</div>
+                        <div class="text-3xl font-bold text-primary-blue" id="stat-users">0</div>
+                    </div>
+                    <div class="rounded-lg bg-white p-6 shadow">
+                        <div class="text-sm text-gray-600">Total Jurnal</div>
+                        <div class="text-3xl font-bold text-primary-blue" id="stat-journals">0</div>
+                    </div>
+                    <div class="rounded-lg bg-white p-6 shadow">
+                        <div class="text-sm text-gray-600">Total Badge</div>
+                        <div class="text-3xl font-bold text-primary-blue" id="stat-badges">0</div>
+                    </div>
+                </div>
+
+                <div class="rounded-lg bg-white p-6 shadow">
+                    <h2 class="mb-4 text-xl font-bold">Aktivitas Terbaru</h2>
+                    <div id="recent-activity" class="space-y-3">
+                        <p class="text-gray-500">Loading...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Missions Management -->
+            <div id="page-missions" class="page-content hidden">
+                <div class="mb-6 flex items-center justify-between">
+                    <h1 class="text-3xl font-bold text-primary-blue">Manajemen Misi</h1>
+                    <button id="show-mission-modal-btn"
+                        class="rounded-lg bg-accent-yellow py-2 px-4 font-medium text-deep-blue hover:bg-accent-yellow-dark">
+                        + Tambah Misi Baru
+                    </button>
+                </div>
+
+                <div class="overflow-hidden rounded-lg bg-white shadow">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Nama Misi</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Kategori</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Lokasi</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mission-table-body" class="divide-y divide-gray-200 bg-white">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Clues Management -->
+            <div id="page-clues" class="page-content hidden">
+                <div class="mb-6 flex items-center justify-between">
+                    <h1 class="text-3xl font-bold text-primary-blue">Manajemen Clue</h1>
+                    <button id="show-clue-modal-btn"
+                        class="rounded-lg bg-accent-yellow py-2 px-4 font-medium text-deep-blue hover:bg-accent-yellow-dark">
+                        + Tambah Clue Baru
+                    </button>
+                </div>
+
+                <div class="mb-4 rounded-lg bg-white p-4 shadow">
+                    <label class="block text-sm font-medium text-gray-700">Filter by Mission</label>
+                    <select id="clue-mission-filter" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm">
+                        <option value="">Semua Misi</option>
+                    </select>
+                </div>
+
+                <div class="overflow-hidden rounded-lg bg-white shadow">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Misi</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Urutan</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Nama Clue</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Radius</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Poin</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clue-table-body" class="divide-y divide-gray-200 bg-white">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Users Management -->
+            <div id="page-users" class="page-content hidden">
+                <h1 class="mb-6 text-3xl font-bold text-primary-blue">Manajemen User</h1>
+                
+                <div class="overflow-hidden rounded-lg bg-white shadow">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Nama</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Email</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Level</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Total Misi</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Admin</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="user-table-body" class="divide-y divide-gray-200 bg-white">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Badges Management -->
+            <div id="page-badges" class="page-content hidden">
+                <div class="mb-6 flex items-center justify-between">
+                    <h1 class="text-3xl font-bold text-primary-blue">Manajemen Badge</h1>
+                    <button id="show-badge-modal-btn"
+                        class="rounded-lg bg-accent-yellow py-2 px-4 font-medium text-deep-blue hover:bg-accent-yellow-dark">
+                        + Tambah Badge Baru
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    <div id="badge-list"></div>
+                </div>
+            </div>
+
+            <!-- Journals Management -->
+            <div id="page-journals" class="page-content hidden">
+                <h1 class="mb-6 text-3xl font-bold text-primary-blue">Moderasi Jurnal</h1>
+                
+                <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    <div id="journal-list"></div>
+                </div>
             </div>
         </main>
     </div>
 
-    <!-- Modal Tambah/Edit Misi (disembunyikan awalnya) -->
+    <!-- Mission Modal -->
     <div id="mission-modal" class="pointer-events-none fixed inset-0 z-50 flex items-center justify-center overflow-y-auto opacity-0 transition-opacity duration-300">
-        <!-- Latar belakang overlay -->
         <div class="absolute inset-0 bg-gray-800 bg-opacity-75"></div>
-
-        <!-- Konten Modal -->
         <form id="mission-form" class="relative z-10 w-full max-w-3xl scale-95 transform rounded-lg bg-white shadow-xl transition-all duration-300">
             <div class="flex items-center justify-between border-b border-gray-200 p-4">
-                <h3 id="modal-title" class="text-xl font-medium text-primary-blue">Tambah Misi Baru</h3>
-                <button id="close-modal-btn" type="button" class="text-gray-400 hover:text-gray-600">
+                <h3 id="mission-modal-title" class="text-xl font-medium text-primary-blue">Tambah Misi Baru</h3>
+                <button id="close-mission-modal-btn" type="button" class="text-gray-400 hover:text-gray-600">
                     <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
 
-            <!-- Form Body -->
             <div class="max-h-[70vh] space-y-4 overflow-y-auto p-6">
                 <input type="hidden" id="mission-id" name="id">
 
-                <!-- Baris 1: Nama & Kategori -->
                 <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div>
-                        <label for="name" class="block text-sm font-medium text-gray-700">Nama Misi</label>
-                        <input type="text" id="name" name="name" required
+                        <label for="mission-name" class="block text-sm font-medium text-gray-700">Nama Misi *</label>
+                        <input type="text" id="mission-name" name="name" required
                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm">
                     </div>
                     <div>
-                        <label for="category" class="block text-sm font-medium text-gray-700">Kategori</label>
-                        <select id="category" name="category" required
+                        <label for="mission-category" class="block text-sm font-medium text-gray-700">Kategori *</label>
+                        <select id="mission-category" name="category" required
                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm">
                             <option>Kuliner</option>
                             <option>Rekreasi</option>
@@ -174,59 +276,47 @@
                     </div>
                 </div>
 
-                <!-- Baris 2: Nama Lokasi -->
                 <div>
-                    <label for="location_name" class="block text-sm font-medium text-gray-700">Nama Lokasi</label>
-                    <input type="text" id="location_name" name="location_name" required
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm"
-                        placeholder="Contoh: Kopi Seroja, Padang">
+                    <label for="mission-location-name" class="block text-sm font-medium text-gray-700">Nama Lokasi *</label>
+                    <input type="text" id="mission-location-name" name="location_name" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm">
                 </div>
                 
-                <!-- Baris 3: Lat & Lng -->
                 <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div>
-                        <label for="latitude" class="block text-sm font-medium text-gray-700">Latitude</label>
-                        <input type="number" step="any" id="latitude" name="latitude" required
-                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm"
-                            placeholder="-0.9471">
+                        <label for="mission-latitude" class="block text-sm font-medium text-gray-700">Latitude *</label>
+                        <input type="number" step="any" id="mission-latitude" name="latitude" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm">
                     </div>
                     <div>
-                        <label for="longitude" class="block text-sm font-medium text-gray-700">Longitude</label>
-                        <input type="number" step="any" id="longitude" name="longitude" required
-                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm"
-                            placeholder="100.4172">
+                        <label for="mission-longitude" class="block text-sm font-medium text-gray-700">Longitude *</label>
+                        <input type="number" step="any" id="mission-longitude" name="longitude" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm">
                     </div>
                 </div>
 
-                <!-- Baris 4: Alamat -->
                 <div>
-                    <label for="address" class="block text-sm font-medium text-gray-700">Alamat</label>
-                    <input type="text" id="address" name="address"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm"
-                        placeholder="Jl. Pemuda No. 45, Padang">
+                    <label for="mission-address" class="block text-sm font-medium text-gray-700">Alamat</label>
+                    <input type="text" id="mission-address" name="address"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm">
                 </div>
 
-                <!-- Baris 5: Deskripsi -->
                 <div>
-                    <label for="description" class="block text-sm font-medium text-gray-700">Deskripsi</label>
-                    <textarea id="description" name="description" rows="3"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm"
-                        placeholder="Kedai kopi tersembunyi..."></textarea>
+                    <label for="mission-description" class="block text-sm font-medium text-gray-700">Deskripsi</label>
+                    <textarea id="mission-description" name="description" rows="3"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm"></textarea>
                 </div>
                 
-                <!-- Baris 6: Image URL -->
                 <div>
-                    <label for="image_url" class="block text-sm font-medium text-gray-700">URL Gambar</label>
-                    <input type="url" id="image_url" name="image_url"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm"
-                        placeholder="https://.../gambar.jpg">
+                    <label for="mission-image-url" class="block text-sm font-medium text-gray-700">URL Gambar</label>
+                    <input type="url" id="mission-image-url" name="image_url"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm">
                 </div>
                 
-                <!-- Baris 7: Budget, Jarak, Kesulitan, Poin -->
                 <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
-                     <div>
-                        <label for="budget_category" class="block text-sm font-medium text-gray-700">Budget</label>
-                        <select id="budget_category" name="budget_category"
+                    <div>
+                        <label for="mission-budget" class="block text-sm font-medium text-gray-700">Budget</label>
+                        <select id="mission-budget" name="budget_category"
                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm">
                             <option>Gratis</option>
                             <option selected>Terjangkau</option>
@@ -234,15 +324,14 @@
                             <option>Mewah</option>
                         </select>
                     </div>
-                     <div>
-                        <label for="estimated_distance" class="block text-sm font-medium text-gray-700">Jarak (km)</label>
-                        <input type="number" step="0.1" id="estimated_distance" name="estimated_distance"
-                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm"
-                            placeholder="2.5">
+                    <div>
+                        <label for="mission-distance" class="block text-sm font-medium text-gray-700">Jarak (km)</label>
+                        <input type="number" step="0.1" id="mission-distance" name="estimated_distance"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm">
                     </div>
                     <div>
-                        <label for="difficulty_level" class="block text-sm font-medium text-gray-700">Kesulitan</LAbel>
-                        <select id="difficulty_level" name="difficulty_level"
+                        <label for="mission-difficulty" class="block text-sm font-medium text-gray-700">Kesulitan</label>
+                        <select id="mission-difficulty" name="difficulty_level"
                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm">
                             <option>Easy</option>
                             <option selected>Medium</option>
@@ -250,297 +339,747 @@
                         </select>
                     </div>
                     <div>
-                        <label for="points" class="block text-sm font-medium text-gray-700">Poin</label>
-                        <input type="number" id="points" name="points" value="10"
+                        <label for="mission-points" class="block text-sm font-medium text-gray-700">Poin</label>
+                        <input type="number" id="mission-points" name="points" value="10"
                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm">
                     </div>
                 </div>
 
-                <div id="form-error" class="text-sm text-red-600 hidden"></div>
+                <div id="mission-form-error" class="text-sm text-red-600 hidden"></div>
             </div>
 
-            <!-- Form Footer -->
             <div class="flex items-center justify-end space-x-3 border-t border-gray-200 bg-gray-50 p-4">
-                <button id="cancel-modal-btn" type="button"
-                    class="rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                <button id="cancel-mission-modal-btn" type="button"
+                    class="rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50">
                     Batal
                 </button>
                 <button type="submit"
-                    class="rounded-md border border-transparent bg-accent-yellow py-2 px-4 text-sm font-medium text-deep-blue shadow-sm hover:bg-accent-yellow-dark focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2">
+                    class="rounded-md border border-transparent bg-accent-yellow py-2 px-4 text-sm font-medium text-deep-blue shadow-sm hover:bg-accent-yellow-dark">
                     Simpan Misi
                 </button>
             </div>
         </form>
     </div>
 
+    <!-- Clue Modal -->
+    <div id="clue-modal" class="pointer-events-none fixed inset-0 z-50 flex items-center justify-center overflow-y-auto opacity-0 transition-opacity duration-300">
+        <div class="absolute inset-0 bg-gray-800 bg-opacity-75"></div>
+        <form id="clue-form" class="relative z-10 w-full max-w-3xl scale-95 transform rounded-lg bg-white shadow-xl transition-all duration-300">
+            <div class="flex items-center justify-between border-b border-gray-200 p-4">
+                <h3 id="clue-modal-title" class="text-xl font-medium text-primary-blue">Tambah Clue Baru</h3>
+                <button id="close-clue-modal-btn" type="button" class="text-gray-400 hover:text-gray-600">
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <div class="max-h-[70vh] space-y-4 overflow-y-auto p-6">
+                <input type="hidden" id="clue-id" name="id">
+
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div>
+                        <label for="clue-mission" class="block text-sm font-medium text-gray-700">Misi *</label>
+                        <select id="clue-mission" name="mission_id" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm">
+                            <option value="">Pilih Misi</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="clue-order" class="block text-sm font-medium text-gray-700">Urutan Clue *</label>
+                        <input type="number" id="clue-order" name="clue_order" required min="1"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="clue-name" class="block text-sm font-medium text-gray-700">Nama Clue *</label>
+                    <input type="text" id="clue-name" name="name" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm">
+                </div>
+
+                <div>
+                    <label for="clue-description" class="block text-sm font-medium text-gray-700">Deskripsi *</label>
+                    <textarea id="clue-description" name="description" rows="3" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm"></textarea>
+                </div>
+
+                <div>
+                    <label for="clue-hint" class="block text-sm font-medium text-gray-700">Petunjuk</label>
+                    <textarea id="clue-hint" name="hint_text" rows="2"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm"></textarea>
+                </div>
+                
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div>
+                        <label for="clue-latitude" class="block text-sm font-medium text-gray-700">Latitude *</label>
+                        <input type="number" step="any" id="clue-latitude" name="latitude" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm">
+                    </div>
+                    <div>
+                        <label for="clue-longitude" class="block text-sm font-medium text-gray-700">Longitude *</label>
+                        <input type="number" step="any" id="clue-longitude" name="longitude" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                    <div>
+                        <label for="clue-radius" class="block text-sm font-medium text-gray-700">Radius (m)</label>
+                        <input type="number" id="clue-radius" name="radius_meters" value="50"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm">
+                    </div>
+                    <div>
+                        <label for="clue-points" class="block text-sm font-medium text-gray-700">Poin Reward</label>
+                        <input type="number" id="clue-points" name="points_reward" value="5"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm">
+                    </div>
+                    <div>
+                        <label for="clue-required" class="block text-sm font-medium text-gray-700">Wajib?</label>
+                        <select id="clue-required" name="is_required"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm">
+                            <option value="true">Ya</option>
+                            <option value="false">Tidak</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="clue-image-url" class="block text-sm font-medium text-gray-700">URL Gambar</label>
+                    <input type="url" id="clue-image-url" name="image_url"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm">
+                </div>
+
+                <div id="clue-form-error" class="text-sm text-red-600 hidden"></div>
+            </div>
+
+            <div class="flex items-center justify-end space-x-3 border-t border-gray-200 bg-gray-50 p-4">
+                <button id="cancel-clue-modal-btn" type="button"
+                    class="rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50">
+                    Batal
+                </button>
+                <button type="submit"
+                    class="rounded-md border border-transparent bg-accent-yellow py-2 px-4 text-sm font-medium text-deep-blue shadow-sm hover:bg-accent-yellow-dark">
+                    Simpan Clue
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Badge Modal -->
+    <div id="badge-modal" class="pointer-events-none fixed inset-0 z-50 flex items-center justify-center overflow-y-auto opacity-0 transition-opacity duration-300">
+        <div class="absolute inset-0 bg-gray-800 bg-opacity-75"></div>
+        <form id="badge-form" class="relative z-10 w-full max-w-2xl scale-95 transform rounded-lg bg-white shadow-xl transition-all duration-300">
+            <div class="flex items-center justify-between border-b border-gray-200 p-4">
+                <h3 id="badge-modal-title" class="text-xl font-medium text-primary-blue">Tambah Badge Baru</h3>
+                <button id="close-badge-modal-btn" type="button" class="text-gray-400 hover:text-gray-600">
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <div class="max-h-[70vh] space-y-4 overflow-y-auto p-6">
+                <input type="hidden" id="badge-id" name="id">
+
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div>
+                        <label for="badge-name" class="block text-sm font-medium text-gray-700">Nama Badge *</label>
+                        <input type="text" id="badge-name" name="name" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm">
+                    </div>
+                    <div>
+                        <label for="badge-color" class="block text-sm font-medium text-gray-700">Warna (Hex) *</label>
+                        <input type="text" id="badge-color" name="color" required placeholder="#F8C104"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="badge-description" class="block text-sm font-medium text-gray-700">Deskripsi *</label>
+                    <textarea id="badge-description" name="description" rows="2" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm"></textarea>
+                </div>
+
+                <div>
+                    <label for="badge-icon" class="block text-sm font-medium text-gray-700">Icon Name *</label>
+                    <input type="text" id="badge-icon" name="icon_name" required placeholder="EmojiEvents"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm">
+                    <p class="mt-1 text-xs text-gray-500">Material Icons name (e.g., EmojiEvents, LocalFireDepartment)</p>
+                </div>
+
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div>
+                        <label for="badge-requirement-type" class="block text-sm font-medium text-gray-700">Tipe Requirement *</label>
+                        <select id="badge-requirement-type" name="requirement_type" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm">
+                            <option value="missions_completed">Misi Selesai</option>
+                            <option value="category_specific">Kategori Spesifik</option>
+                            <option value="streak_days">Streak Hari</option>
+                            <option value="distance_traveled">Jarak Tempuh</option>
+                            <option value="journals_written">Jurnal Ditulis</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="badge-requirement-value" class="block text-sm font-medium text-gray-700">Nilai Requirement *</label>
+                        <input type="number" id="badge-requirement-value" name="requirement_value" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="badge-requirement-category" class="block text-sm font-medium text-gray-700">Kategori (Optional)</label>
+                    <select id="badge-requirement-category" name="requirement_category"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm">
+                        <option value="">Tidak Ada</option>
+                        <option>Kuliner</option>
+                        <option>Rekreasi</option>
+                        <option>Seni & Budaya</option>
+                        <option>Sejarah</option>
+                        <option>Belanja</option>
+                        <option>Alam</option>
+                    </select>
+                </div>
+
+                <div id="badge-form-error" class="text-sm text-red-600 hidden"></div>
+            </div>
+
+            <div class="flex items-center justify-end space-x-3 border-t border-gray-200 bg-gray-50 p-4">
+                <button id="cancel-badge-modal-btn" type="button"
+                    class="rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50">
+                    Batal
+                </button>
+                <button type="submit"
+                    class="rounded-md border border-transparent bg-accent-yellow py-2 px-4 text-sm font-medium text-deep-blue shadow-sm hover:bg-accent-yellow-dark">
+                    Simpan Badge
+                </button>
+            </div>
+        </form>
+    </div>
+
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // --- STATE ---
-            let token = null;
-            let currentEditingId = null;
-            // Ganti ini ke URL backend Anda jika berbeda
-            const API_URL = 'http://localhost:5000/api'; 
+        const API_URL = 'http://localhost:5000/api';
+        let token = null;
+        let currentEditingId = null;
+        let currentPage = 'dashboard';
 
-            // --- DOM ELEMENTS ---
-            const loginScreen = document.getElementById('login-screen');
-            const dashboard = document.getElementById('dashboard');
-            const loginForm = document.getElementById('login-form');
-            const loginError = document.getElementById('login-error');
+        // DOM Elements
+        const loginScreen = document.getElementById('login-screen');
+        const dashboard = document.getElementById('dashboard');
+        const loginForm = document.getElementById('login-form');
+        const loginError = document.getElementById('login-error');
+        const logoutBtn = document.getElementById('logout-btn');
 
-            const missionTableBody = document.getElementById('mission-table-body');
-            const showModalBtn = document.getElementById('show-modal-btn');
-            const modal = document.getElementById('mission-modal');
-            const closeModalBtn = document.getElementById('close-modal-btn');
-            const cancelModalBtn = document.getElementById('cancel-modal-btn');
-            const missionForm = document.getElementById('mission-form');
-            const modalTitle = document.getElementById('modal-title');
-            const formError = document.getElementById('form-error');
+        // ========== AUTHENTICATION ==========
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            loginError.classList.add('hidden');
+            
+            const email = document.getElementById('email-address').value;
+            const password = document.getElementById('password').value;
 
-            // --- FUNCTIONS ---
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
 
-            /**
-             * Menampilkan/menyembunyikan modal
-             * @param {boolean} show - Tampilkan (true) atau sembunyikan (false)
-             * @param {object|null} mission - Data misi untuk mode edit
-             */
-            function showModal(show, mission = null) {
-                if (show) {
-                    missionForm.reset();
-                    formError.classList.add('hidden');
-                    formError.textContent = '';
-                    currentEditingId = null;
+                const data = await response.json();
 
-                    if (mission) {
-                        // Mode Edit
-                        modalTitle.textContent = 'Edit Misi';
-                        document.getElementById('mission-id').value = mission.id;
-                        document.getElementById('name').value = mission.name || '';
-                        document.getElementById('category').value = mission.category || 'Kuliner';
-                        document.getElementById('location_name').value = mission.location_name || '';
-                        document.getElementById('latitude').value = mission.latitude || '';
-                        document.getElementById('longitude').value = mission.longitude || '';
-                        document.getElementById('address').value = mission.address || '';
-                        document.getElementById('description').value = mission.description || '';
-                        document.getElementById('image_url').value = mission.image_url || '';
-                        document.getElementById('budget_category').value = mission.budget_category || 'Terjangkau';
-                        document.getElementById('estimated_distance').value = mission.estimated_distance || '';
-                        document.getElementById('difficulty_level').value = mission.difficulty_level || 'Medium';
-                        document.getElementById('points').value = mission.points || 10;
-                        currentEditingId = mission.id;
-                    } else {
-                        // Mode Create
-                        modalTitle.textContent = 'Tambah Misi Baru';
-                    }
-                    
-                    modal.classList.remove('pointer-events-none', 'opacity-0');
-                    modal.querySelector('form').classList.remove('scale-95');
-                } else {
-                    modal.classList.add('pointer-events-none', 'opacity-0');
-                    modal.querySelector('form').classList.add('scale-95');
+                if (!response.ok) {
+                    throw new Error(data.error || 'Login gagal');
                 }
-            }
 
-            /**
-             * Melakukan login ke backend
-             */
-            async function handleLogin(e) {
-                e.preventDefault();
-                loginError.classList.add('hidden');
-                const email = document.getElementById('email-address').value;
-                const password = document.getElementById('password').value;
-
-                try {
-                    const response = await fetch(`${API_URL}/auth/login`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email, password })
-                    });
-
-                    const data = await response.json();
-
-                    if (!response.ok) {
-                        throw new Error(data.error || 'Login gagal');
-                    }
-
-                    token = data.token;
-                    loginScreen.classList.add('hidden');
-                    dashboard.classList.remove('hidden');
-                    loadMissions();
-                } catch (error) {
-                    loginError.textContent = error.message;
-                    loginError.classList.remove('hidden');
-                }
-            }
-
-            /**
-             * Memuat semua misi dari API dan menampilkannya di tabel
-             */
-            async function loadMissions() {
-                if (!token) return;
-
-                try {
-                    const response = await fetch(`${API_URL}/missions`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    const data = await response.json();
-                    
-                    if (!response.ok) {
-                        throw new Error(data.error || 'Gagal memuat misi');
-                    }
-
-                    const missions = data.missions || data; // Menyesuaikan jika API Anda mengembalikan array langsung
-                    
-                    missionTableBody.innerHTML = ''; // Kosongkan tabel
-                    if (missions.length === 0) {
-                         missionTableBody.innerHTML = '<tr><td colspan="4" class="px-6 py-4 text-center text-gray-500">Belum ada misi.</td></tr>';
-                    } else {
-                        missions.forEach(renderMissionRow);
-                    }
-                } catch (error) {
-                    missionTableBody.innerHTML = `<tr><td colspan="4" class="px-6 py-4 text-center text-red-500">Error: ${error.message}</td></tr>`;
-                }
-            }
-
-            /**
-             * Merender satu baris misi ke dalam tabel
-             */
-            function renderMissionRow(mission) {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm font-medium text-gray-900">${mission.name}</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="inline-flex rounded-full bg-blue-100 px-2 text-xs font-semibold leading-5 text-blue-800">
-                            ${mission.category}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${mission.location_name}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button data-id="${mission.id}" class="edit-btn text-blue-600 hover:text-blue-900">Edit</button>
-                        <button data-id="${mission.id}" class="delete-btn text-red-600 hover:text-red-900 ml-4">Hapus</button>
-                    </td>
-                `;
-                missionTableBody.appendChild(tr);
-            }
-
-            /**
-             * Menangani submit form (Create atau Update)
-             */
-            async function handleFormSubmit(e) {
-                e.preventDefault();
-                formError.classList.add('hidden');
-
-                const formData = new FormData(missionForm);
-                const data = Object.fromEntries(formData.entries());
+                token = data.token;
+                localStorage.setItem('admin_token', token);
                 
-                // Konversi string angka ke number
-                data.latitude = parseFloat(data.latitude);
-                data.longitude = parseFloat(data.longitude);
-                data.points = parseInt(data.points, 10);
-                if (data.estimated_distance) {
-                    data.estimated_distance = parseFloat(data.estimated_distance);
-                } else {
-                    delete data.estimated_distance; // Hapus jika kosong
-                }
-
-                const url = currentEditingId
-                    ? `${API_URL}/missions/${currentEditingId}`
-                    : `${API_URL}/missions`;
-                
-                const method = currentEditingId ? 'PUT' : 'POST';
-
-                try {
-                    const response = await fetch(url, {
-                        method: method,
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        },
-                        body: JSON.stringify(data)
-                    });
-
-                    const result = await response.json();
-
-                    if (!response.ok) {
-                        throw new Error(result.error || 'Gagal menyimpan misi');
-                    }
-
-                    showModal(false);
-                    loadMissions();
-                } catch (error) {
-                    formError.textContent = error.message;
-                    formError.classList.remove('hidden');
-                }
+                loginScreen.classList.add('hidden');
+                dashboard.classList.remove('hidden');
+                loadDashboard();
+            } catch (error) {
+                loginError.textContent = error.message;
+                loginError.classList.remove('hidden');
             }
+        });
 
-            /**
-             * Mengambil data misi untuk diedit
-             */
-            async function handleEdit(id) {
-                 try {
-                    const response = await fetch(`${API_URL}/missions/${id}`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    const data = await response.json();
-                    
-                    if (!response.ok) {
-                        throw new Error(data.error || 'Gagal mengambil data misi');
-                    }
-                    
-                    const mission = data.mission || data; // Menyesuaikan jika API mengembalikan {mission: ...}
-                    showModal(true, mission);
+        logoutBtn.addEventListener('click', () => {
+            token = null;
+            localStorage.removeItem('admin_token');
+            loginScreen.classList.remove('hidden');
+            dashboard.classList.add('hidden');
+        });
 
-                } catch (error) {
-                    alert('Error: ' + error.message);
-                }
-            }
+        // Check for saved token
+        const savedToken = localStorage.getItem('admin_token');
+        if (savedToken) {
+            token = savedToken;
+            loginScreen.classList.add('hidden');
+            dashboard.classList.remove('hidden');
+            loadDashboard();
+        }
 
-            /**
-             * Menghapus misi
-             */
-            async function handleDelete(id) {
-                // Aturan proyek melarang confirm()
-                // if (!confirm('Apakah Anda yakin ingin menghapus misi ini?')) {
-                //     return;
-                // }
-
-                try {
-                    const response = await fetch(`${API_URL}/missions/${id}`, {
-                        method: 'DELETE',
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-
-                    const data = await response.json();
-
-                    if (!response.ok) {
-                        throw new Error(data.error || 'Gagal menghapus misi');
-                    }
-                    
-                    loadMissions();
-                } catch (error) {
-                    alert('Error: ' + error.message);
-                }
-            }
-
-
-            // --- EVENT LISTENERS ---
-            loginForm.addEventListener('submit', handleLogin);
-            showModalBtn.addEventListener('click', () => showModal(true));
-            closeModalBtn.addEventListener('click', () => showModal(false));
-            cancelModalBtn.addEventListener('click', () => showModal(false));
-            missionForm.addEventListener('submit', handleFormSubmit);
-
-            // Event delegation untuk tombol Edit dan Hapus
-            missionTableBody.addEventListener('click', e => {
-                if (e.target.classList.contains('edit-btn')) {
-                    handleEdit(e.target.dataset.id);
-                }
-                if (e.target.classList.contains('delete-btn')) {
-                    handleDelete(e.target.dataset.id);
-                }
+        // ========== NAVIGATION ==========
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const page = link.dataset.page;
+                navigateToPage(page);
             });
         });
+
+        function navigateToPage(page) {
+            navLinks.forEach(link => link.classList.remove('bg-primary-blue'));
+            document.querySelector(`[data-page="${page}"]`).classList.add('bg-primary-blue');
+            
+            document.querySelectorAll('.page-content').forEach(content => content.classList.add('hidden'));
+            document.getElementById(`page-${page}`).classList.remove('hidden');
+            
+            currentPage = page;
+            
+            if (page === 'dashboard') loadDashboard();
+            else if (page === 'missions') loadMissions();
+            else if (page === 'clues') loadClues();
+            else if (page === 'users') loadUsers();
+            else if (page === 'badges') loadBadges();
+            else if (page === 'journals') loadJournals();
+        }
+
+        // ========== API HELPERS ==========
+        async function apiRequest(endpoint, options = {}) {
+            const config = {
+                ...options,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                    ...options.headers
+                }
+            };
+
+            const response = await fetch(`${API_URL}${endpoint}`, config);
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Request failed');
+            }
+
+            return data;
+        }
+
+        // ========== DASHBOARD ==========
+        async function loadDashboard() {
+            try {
+                const [missions, users, journals, badges] = await Promise.all([
+                    apiRequest('/missions'),
+                    apiRequest('/profile/stats'),
+                    apiRequest('/journals'),
+                    apiRequest('/profile/badges')
+                ]);
+
+                document.getElementById('stat-missions').textContent = missions.missions?.length || 0;
+                document.getElementById('stat-users').textContent = '5'; // Placeholder
+                document.getElementById('stat-journals').textContent = journals.journals?.length || 0;
+                document.getElementById('stat-badges').textContent = badges.badges?.length || 0;
+
+                const activityDiv = document.getElementById('recent-activity');
+                activityDiv.innerHTML = `
+                    <div class="text-sm text-gray-600">
+                        <p>• ${missions.missions?.length || 0} misi tersedia</p>
+                        <p>• ${journals.journals?.length || 0} jurnal dibuat</p>
+                        <p>• ${badges.badges?.length || 0} badge tersedia</p>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Load dashboard error:', error);
+            }
+        }
+
+        // ========== MISSIONS MANAGEMENT ==========
+        const missionModal = document.getElementById('mission-modal');
+        const missionForm = document.getElementById('mission-form');
+        const missionTableBody = document.getElementById('mission-table-body');
+
+        document.getElementById('show-mission-modal-btn').addEventListener('click', () => showMissionModal());
+        document.getElementById('close-mission-modal-btn').addEventListener('click', () => hideMissionModal());
+        document.getElementById('cancel-mission-modal-btn').addEventListener('click', () => hideMissionModal());
+
+        function showMissionModal(mission = null) {
+            missionForm.reset();
+            currentEditingId = null;
+            document.getElementById('mission-form-error').classList.add('hidden');
+
+            if (mission) {
+                document.getElementById('mission-modal-title').textContent = 'Edit Misi';
+                document.getElementById('mission-id').value = mission.id;
+                document.getElementById('mission-name').value = mission.name || '';
+                document.getElementById('mission-category').value = mission.category || 'Kuliner';
+                document.getElementById('mission-location-name').value = mission.location_name || '';
+                document.getElementById('mission-latitude').value = mission.latitude || '';
+                document.getElementById('mission-longitude').value = mission.longitude || '';
+                document.getElementById('mission-address').value = mission.address || '';
+                document.getElementById('mission-description').value = mission.description || '';
+                document.getElementById('mission-image-url').value = mission.image_url || '';
+                document.getElementById('mission-budget').value = mission.budget_category || 'Terjangkau';
+                document.getElementById('mission-distance').value = mission.estimated_distance || '';
+                document.getElementById('mission-difficulty').value = mission.difficulty_level || 'Medium';
+                document.getElementById('mission-points').value = mission.points || 10;
+                currentEditingId = mission.id;
+            } else {
+                document.getElementById('mission-modal-title').textContent = 'Tambah Misi Baru';
+            }
+            
+            missionModal.classList.remove('pointer-events-none', 'opacity-0');
+            missionModal.querySelector('form').classList.remove('scale-95');
+        }
+
+        function hideMissionModal() {
+            missionModal.classList.add('pointer-events-none', 'opacity-0');
+            missionModal.querySelector('form').classList.add('scale-95');
+        }
+
+        missionForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            document.getElementById('mission-form-error').classList.add('hidden');
+
+            const formData = new FormData(missionForm);
+            const data = Object.fromEntries(formData.entries());
+            
+            data.latitude = parseFloat(data.latitude);
+            data.longitude = parseFloat(data.longitude);
+            data.points = parseInt(data.points, 10);
+            if (data.estimated_distance) {
+                data.estimated_distance = parseFloat(data.estimated_distance);
+            }
+
+            try {
+                if (currentEditingId) {
+                    await apiRequest(`/missions/${currentEditingId}`, {
+                        method: 'PUT',
+                        body: JSON.stringify(data)
+                    });
+                } else {
+                    await apiRequest('/missions', {
+                        method: 'POST',
+                        body: JSON.stringify(data)
+                    });
+                }
+
+                hideMissionModal();
+                loadMissions();
+            } catch (error) {
+                document.getElementById('mission-form-error').textContent = error.message;
+                document.getElementById('mission-form-error').classList.remove('hidden');
+            }
+        });
+
+        async function loadMissions() {
+            try {
+                const data = await apiRequest('/missions');
+                const missions = data.missions || data;
+                
+                missionTableBody.innerHTML = '';
+                if (missions.length === 0) {
+                    missionTableBody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center text-gray-500">Belum ada misi.</td></tr>';
+                } else {
+                    missions.forEach(mission => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900">${mission.name}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex rounded-full bg-blue-100 px-2 text-xs font-semibold leading-5 text-blue-800">
+                                    ${mission.category}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${mission.location_name}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex rounded-full ${mission.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'} px-2 text-xs font-semibold leading-5">
+                                    ${mission.is_active ? 'Aktif' : 'Nonaktif'}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <button onclick="editMission(${mission.id})" class="text-blue-600 hover:text-blue-900">Edit</button>
+                                <button onclick="deleteMission(${mission.id})" class="text-red-600 hover:text-red-900 ml-4">Hapus</button>
+                            </td>
+                        `;
+                        missionTableBody.appendChild(tr);
+                    });
+                }
+            } catch (error) {
+                console.error('Load missions error:', error);
+                missionTableBody.innerHTML = `<tr><td colspan="5" class="px-6 py-4 text-center text-red-500">Error: ${error.message}</td></tr>`;
+            }
+        }
+
+        window.editMission = async (id) => {
+            try {
+                const data = await apiRequest(`/missions/${id}`);
+                showMissionModal(data.mission || data);
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        };
+
+        window.deleteMission = async (id) => {
+            if (!window.confirm('Apakah Anda yakin ingin menghapus misi ini?')) return;
+
+            try {
+                await apiRequest(`/missions/${id}`, { method: 'DELETE' });
+                loadMissions();
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        };
+
+        // ========== CLUES MANAGEMENT ==========
+        const clueModal = document.getElementById('clue-modal');
+        const clueForm = document.getElementById('clue-form');
+        const clueTableBody = document.getElementById('clue-table-body');
+        const clueMissionFilter = document.getElementById('clue-mission-filter');
+
+        document.getElementById('show-clue-modal-btn').addEventListener('click', () => showClueModal());
+        document.getElementById('close-clue-modal-btn').addEventListener('click', () => hideClueModal());
+        document.getElementById('cancel-clue-modal-btn').addEventListener('click', () => hideClueModal());
+
+        async function loadClues() {
+            try {
+                const missionsData = await apiRequest('/missions');
+                const missions = missionsData.missions || missionsData;
+                
+                const clueMissionSelect = document.getElementById('clue-mission');
+                clueMissionSelect.innerHTML = '<option value="">Pilih Misi</option>';
+                clueMissionFilter.innerHTML = '<option value="">Semua Misi</option>';
+                
+                missions.forEach(m => {
+                    clueMissionSelect.innerHTML += `<option value="${m.id}">${m.name}</option>`;
+                    clueMissionFilter.innerHTML += `<option value="${m.id}">${m.name}</option>`;
+                });
+
+                // Load all clues
+                const clues = [];
+                for (const mission of missions) {
+                    const data = await apiRequest(`/tracking/mission/${mission.id}`);
+                    if (data.mission?.clues) {
+                        clues.push(...data.mission.clues.map(c => ({ ...c, missionName: mission.name })));
+                    }
+                }
+
+                renderClues(clues);
+            } catch (error) {
+                console.error('Load clues error:', error);
+            }
+        }
+
+        function renderClues(clues) {
+            clueTableBody.innerHTML = '';
+            if (clues.length === 0) {
+                clueTableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">Belum ada clue.</td></tr>';
+            } else {
+                clues.forEach(clue => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${clue.missionName}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${clue.clue_order}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${clue.name}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${clue.radius_meters}m</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${clue.points_reward}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <button onclick="deleteClue(${clue.id})" class="text-red-600 hover:text-red-900">Hapus</button>
+                        </td>
+                    `;
+                    clueTableBody.appendChild(tr);
+                });
+            }
+        }
+
+        function showClueModal(clue = null) {
+            clueForm.reset();
+            document.getElementById('clue-form-error').classList.add('hidden');
+
+            clueModal.classList.remove('pointer-events-none', 'opacity-0');
+            clueModal.querySelector('form').classList.remove('scale-95');
+        }
+
+        function hideClueModal() {
+            clueModal.classList.add('pointer-events-none', 'opacity-0');
+            clueModal.querySelector('form').classList.add('scale-95');
+        }
+
+        clueForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            document.getElementById('clue-form-error').classList.add('hidden');
+
+            const formData = new FormData(clueForm);
+            const data = Object.fromEntries(formData.entries());
+            
+            const missionId = data.mission_id;
+            delete data.mission_id;
+            
+            data.clue_order = parseInt(data.clue_order, 10);
+            data.latitude = parseFloat(data.latitude);
+            data.longitude = parseFloat(data.longitude);
+            data.radius_meters = parseInt(data.radius_meters, 10);
+            data.points_reward = parseInt(data.points_reward, 10);
+            data.is_required = data.is_required === 'true';
+
+            try {
+                await apiRequest(`/tracking/missions/${missionId}/clues`, {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+
+                hideClueModal();
+                loadClues();
+            } catch (error) {
+                document.getElementById('clue-form-error').textContent = error.message;
+                document.getElementById('clue-form-error').classList.remove('hidden');
+            }
+        });
+
+        window.deleteClue = async (id) => {
+            if (!window.confirm('Apakah Anda yakin ingin menghapus clue ini?')) return;
+            alert('Delete clue functionality coming soon');
+        };
+
+        // ========== USERS MANAGEMENT ==========
+        async function loadUsers() {
+            const userTableBody = document.getElementById('user-table-body');
+            userTableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">User management feature coming soon</td></tr>';
+        }
+
+        // ========== BADGES MANAGEMENT ==========
+        const badgeModal = document.getElementById('badge-modal');
+        const badgeForm = document.getElementById('badge-form');
+
+        document.getElementById('show-badge-modal-btn').addEventListener('click', () => showBadgeModal());
+        document.getElementById('close-badge-modal-btn').addEventListener('click', () => hideBadgeModal());
+        document.getElementById('cancel-badge-modal-btn').addEventListener('click', () => hideBadgeModal());
+
+        async function loadBadges() {
+            try {
+                const data = await apiRequest('/profile/badges');
+                const badges = data.badges || [];
+                
+                const badgeList = document.getElementById('badge-list');
+                badgeList.innerHTML = '';
+                
+                if (badges.length === 0) {
+                    badgeList.innerHTML = '<p class="text-gray-500">Belum ada badge.</p>';
+                } else {
+                    badges.forEach(badge => {
+                        const div = document.createElement('div');
+                        div.className = 'rounded-lg bg-white p-6 shadow';
+                        div.innerHTML = `
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <h3 class="text-lg font-semibold" style="color: ${badge.color}">${badge.name}</h3>
+                                    <p class="mt-1 text-sm text-gray-600">${badge.description}</p>
+                                    <div class="mt-2 text-xs text-gray-500">
+                                        <p>Type: ${badge.requirement_type}</p>
+                                        <p>Value: ${badge.requirement_value}</p>
+                                        ${badge.requirement_category ? `<p>Category: ${badge.requirement_category}</p>` : ''}
+                                    </div>
+                                </div>
+                                <button onclick="deleteBadge(${badge.id})" class="ml-4 text-red-600 hover:text-red-900">
+                                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                            </div>
+                        `;
+                        badgeList.appendChild(div);
+                    });
+                }
+            } catch (error) {
+                console.error('Load badges error:', error);
+            }
+        }
+
+        function showBadgeModal(badge = null) {
+            badgeForm.reset();
+            document.getElementById('badge-form-error').classList.add('hidden');
+
+            if (badge) {
+                document.getElementById('badge-modal-title').textContent = 'Edit Badge';
+                document.getElementById('badge-id').value = badge.id;
+                document.getElementById('badge-name').value = badge.name || '';
+                document.getElementById('badge-description').value = badge.description || '';
+                document.getElementById('badge-icon').value = badge.icon_name || '';
+                document.getElementById('badge-color').value = badge.color || '';
+                document.getElementById('badge-requirement-type').value = badge.requirement_type || '';
+                document.getElementById('badge-requirement-value').value = badge.requirement_value || '';
+                document.getElementById('badge-requirement-category').value = badge.requirement_category || '';
+            } else {
+                document.getElementById('badge-modal-title').textContent = 'Tambah Badge Baru';
+            }
+            
+            badgeModal.classList.remove('pointer-events-none', 'opacity-0');
+            badgeModal.querySelector('form').classList.remove('scale-95');
+        }
+
+        function hideBadgeModal() {
+            badgeModal.classList.add('pointer-events-none', 'opacity-0');
+            badgeModal.querySelector('form').classList.add('scale-95');
+        }
+
+        badgeForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            alert('Badge create/update functionality coming soon');
+            hideBadgeModal();
+        });
+
+        window.deleteBadge = async (id) => {
+            if (!window.confirm('Apakah Anda yakin ingin menghapus badge ini?')) return;
+            alert('Delete badge functionality coming soon');
+        };
+
+        // ========== JOURNALS MANAGEMENT ==========
+        async function loadJournals() {
+            try {
+                const data = await apiRequest('/journals');
+                const journals = data.journals || [];
+                
+                const journalList = document.getElementById('journal-list');
+                journalList.innerHTML = '';
+                
+                if (journals.length === 0) {
+                    journalList.innerHTML = '<p class="text-gray-500">Belum ada jurnal.</p>';
+                } else {
+                    journals.forEach(journal => {
+                        const div = document.createElement('div');
+                        div.className = 'rounded-lg bg-white p-6 shadow';
+                        div.innerHTML = `
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    ${journal.image_url ? `<img src="${journal.image_url}" alt="${journal.title}" class="mb-3 h-40 w-full object-cover rounded">` : ''}
+                                    <h3 class="text-lg font-semibold text-gray-900">${journal.title}</h3>
+                                    <p class="mt-2 text-sm text-gray-600">${journal.story.substring(0, 100)}...</p>
+                                    <p class="mt-2 text-xs text-gray-500">${new Date(journal.date).toLocaleDateString('id-ID')}</p>
+                                    ${journal.location_name ? `<p class="text-xs text-gray-500">📍 ${journal.location_name}</p>` : ''}
+                                </div>
+                                <button onclick="deleteJournal(${journal.id})" class="ml-4 text-red-600 hover:text-red-900">
+                                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                            </div>
+                        `;
+                        journalList.appendChild(div);
+                    });
+                }
+            } catch (error) {
+                console.error('Load journals error:', error);
+            }
+        }
+
+        window.deleteJournal = async (id) => {
+            if (!window.confirm('Apakah Anda yakin ingin menghapus jurnal ini?')) return;
+            
+            try {
+                await apiRequest(`/journals/${id}`, { method: 'DELETE' });
+                loadJournals();
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        };
     </script>
 </body>
 </html>
