@@ -554,7 +554,9 @@
     </div>
 
     <script>
-        const API_URL = 'http://localhost:5000/api';
+        // --- PERBAIKAN: API_URL diubah ke /api (relatif) ---
+        // Ini akan berfungsi baik di localhost:5000/admin maupun di production
+        const API_URL = '/api';
         let token = null;
         let currentEditingId = null;
         let currentPage = 'dashboard';
@@ -575,6 +577,7 @@
             const password = document.getElementById('password').value;
 
             try {
+                // --- PERBAIKAN: Menggunakan URL relatif ---
                 const response = await fetch(`${API_URL}/auth/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -654,6 +657,12 @@
             };
 
             const response = await fetch(`${API_URL}${endpoint}`, config);
+            
+            // Handle 204 No Content (untuk delete)
+            if (response.status === 204) {
+                return { success: true };
+            }
+
             const data = await response.json();
 
             if (!response.ok) {
@@ -663,35 +672,42 @@
             return data;
         }
 
-        // ========== DASHBOARD ==========
+        // ========== DASHBOARD (DIPERBARUI) ==========
         async function loadDashboard() {
             try {
-                const [missions, users, journals, badges] = await Promise.all([
-                    apiRequest('/missions'),
-                    apiRequest('/profile/stats'),
-                    apiRequest('/journals'),
-                    apiRequest('/profile/badges')
-                ]);
+                // --- PERBAIKAN: Panggil endpoint admin/stats ---
+                const data = await apiRequest('/admin/stats');
+                
+                if (data.stats) {
+                    document.getElementById('stat-missions').textContent = data.stats.totalMissions || 0;
+                    document.getElementById('stat-users').textContent = data.stats.totalUsers || 0;
+                    document.getElementById('stat-journals').textContent = data.stats.totalJournals || 0;
+                    document.getElementById('stat-badges').textContent = data.stats.totalBadges || 0;
+                }
 
-                document.getElementById('stat-missions').textContent = missions.missions?.length || 0;
-                document.getElementById('stat-users').textContent = '5'; // Placeholder
-                document.getElementById('stat-journals').textContent = journals.journals?.length || 0;
-                document.getElementById('stat-badges').textContent = badges.badges?.length || 0;
-
+                // --- PERBAIKAN: Tampilkan recent activity ---
                 const activityDiv = document.getElementById('recent-activity');
-                activityDiv.innerHTML = `
-                    <div class="text-sm text-gray-600">
-                        <p>• ${missions.missions?.length || 0} misi tersedia</p>
-                        <p>• ${journals.journals?.length || 0} jurnal dibuat</p>
-                        <p>• ${badges.badges?.length || 0} badge tersedia</p>
-                    </div>
-                `;
+                activityDiv.innerHTML = ''; // Kosongkan
+                
+                if (data.recentActivity) {
+                    data.recentActivity.completions?.forEach(comp => {
+                        activityDiv.innerHTML += `<p class="text-sm text-gray-600">• <b>${comp.user?.name || 'User'}</b> menyelesaikan misi <b>${comp.mission?.name}</b></p>`;
+                    });
+                    data.recentActivity.journals?.forEach(journal => {
+                        activityDiv.innerHTML += `<p class="text-sm text-gray-600">• <b>${journal.user?.name || 'User'}</b> menulis jurnal <b>"${journal.title}"</b></p>`;
+                    });
+                }
+                if (activityDiv.innerHTML === '') {
+                     activityDiv.innerHTML = '<p class="text-gray-500">Belum ada aktivitas.</p>';
+                }
+
             } catch (error) {
                 console.error('Load dashboard error:', error);
+                document.getElementById('recent-activity').innerHTML = `<p class="text-red-500">Gagal memuat statistik: ${error.message}</p>`;
             }
         }
 
-        // ========== MISSIONS MANAGEMENT ==========
+        // ========== MISSIONS MANAGEMENT (DIPERBARUI) ==========
         const missionModal = document.getElementById('mission-modal');
         const missionForm = document.getElementById('mission-form');
         const missionTableBody = document.getElementById('mission-table-body');
@@ -750,11 +766,13 @@
 
             try {
                 if (currentEditingId) {
+                    // Panggil endpoint /api/missions/:id (PUT)
                     await apiRequest(`/missions/${currentEditingId}`, {
                         method: 'PUT',
                         body: JSON.stringify(data)
                     });
                 } else {
+                    // Panggil endpoint /api/missions (POST)
                     await apiRequest('/missions', {
                         method: 'POST',
                         body: JSON.stringify(data)
@@ -763,6 +781,7 @@
 
                 hideMissionModal();
                 loadMissions();
+                loadDashboard(); // Update stats
             } catch (error) {
                 document.getElementById('mission-form-error').textContent = error.message;
                 document.getElementById('mission-form-error').classList.remove('hidden');
@@ -771,8 +790,8 @@
 
         async function loadMissions() {
             try {
-                const data = await apiRequest('/missions');
-                const missions = data.missions || data;
+                // --- PERBAIKAN: Baca 'data' langsung sebagai array ---
+                const missions = await apiRequest('/missions') || [];
                 
                 missionTableBody.innerHTML = '';
                 if (missions.length === 0) {
@@ -811,19 +830,22 @@
 
         window.editMission = async (id) => {
             try {
-                const data = await apiRequest(`/missions/${id}`);
-                showMissionModal(data.mission || data);
+                // Endpoint /api/missions/:id (GET)
+                const mission = await apiRequest(`/missions/${id}`);
+                showMissionModal(mission);
             } catch (error) {
                 alert('Error: ' + error.message);
             }
         };
 
         window.deleteMission = async (id) => {
-            if (!window.confirm('Apakah Anda yakin ingin menghapus misi ini?')) return;
+            if (!window.confirm('Apakah Anda yakin ingin menghapus misi ini? Ini akan menghapus semua clue terkait.')) return;
 
             try {
+                // Endpoint /api/missions/:id (DELETE)
                 await apiRequest(`/missions/${id}`, { method: 'DELETE' });
                 loadMissions();
+                loadDashboard(); // Update stats
             } catch (error) {
                 alert('Error: ' + error.message);
             }
@@ -841,8 +863,7 @@
 
         async function loadClues() {
             try {
-                const missionsData = await apiRequest('/missions');
-                const missions = missionsData.missions || missionsData;
+                const missions = await apiRequest('/missions') || [];
                 
                 const clueMissionSelect = document.getElementById('clue-mission');
                 clueMissionSelect.innerHTML = '<option value="">Pilih Misi</option>';
@@ -856,12 +877,16 @@
                 // Load all clues
                 const clues = [];
                 for (const mission of missions) {
-                    const data = await apiRequest(`/tracking/mission/${mission.id}`);
-                    if (data.mission?.clues) {
-                        clues.push(...data.mission.clues.map(c => ({ ...c, missionName: mission.name })));
+                    try {
+                        // Endpoint /api/tracking/mission/:id (GET)
+                        const data = await apiRequest(`/tracking/mission/${mission.id}`);
+                        if (data.clues) {
+                            clues.push(...data.clues.map(c => ({ ...c, missionName: mission.name })));
+                        }
+                    } catch (e) {
+                        // Misi mungkin belum punya clue, tidak apa-apa
                     }
                 }
-
                 renderClues(clues);
             } catch (error) {
                 console.error('Load clues error:', error);
@@ -873,7 +898,8 @@
             if (clues.length === 0) {
                 clueTableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">Belum ada clue.</td></tr>';
             } else {
-                clues.forEach(clue => {
+                clues.sort((a,b) => a.missionName.localeCompare(b.missionName) || a.clue_order - b.clue_order)
+                    .forEach(clue => {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${clue.missionName}</td>
@@ -893,7 +919,6 @@
         function showClueModal(clue = null) {
             clueForm.reset();
             document.getElementById('clue-form-error').classList.add('hidden');
-
             clueModal.classList.remove('pointer-events-none', 'opacity-0');
             clueModal.querySelector('form').classList.remove('scale-95');
         }
@@ -911,6 +936,11 @@
             const data = Object.fromEntries(formData.entries());
             
             const missionId = data.mission_id;
+            if (!missionId) {
+                document.getElementById('clue-form-error').textContent = "Anda harus memilih Misi.";
+                document.getElementById('clue-form-error').classList.remove('hidden');
+                return;
+            }
             delete data.mission_id;
             
             data.clue_order = parseInt(data.clue_order, 10);
@@ -921,6 +951,7 @@
             data.is_required = data.is_required === 'true';
 
             try {
+                // Endpoint /api/tracking/missions/:id/clues (POST)
                 await apiRequest(`/tracking/missions/${missionId}/clues`, {
                     method: 'POST',
                     body: JSON.stringify(data)
@@ -936,16 +967,67 @@
 
         window.deleteClue = async (id) => {
             if (!window.confirm('Apakah Anda yakin ingin menghapus clue ini?')) return;
-            alert('Delete clue functionality coming soon');
+            try {
+                // Endpoint /api/admin/clues/:id (DELETE)
+                await apiRequest(`/admin/clues/${id}`, { method: 'DELETE' });
+                loadClues();
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
         };
 
-        // ========== USERS MANAGEMENT ==========
+        // ========== USERS MANAGEMENT (DIPERBARUI) ==========
         async function loadUsers() {
             const userTableBody = document.getElementById('user-table-body');
-            userTableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">User management feature coming soon</td></tr>';
+            try {
+                // --- PERBAIKAN: Implementasi fungsi ---
+                const data = await apiRequest('/admin/users');
+                const users = data.users || [];
+                
+                userTableBody.innerHTML = '';
+                if (users.length === 0) {
+                    userTableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">Belum ada user.</td></tr>';
+                } else {
+                    users.forEach(user => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900">${user.name}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${user.email}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${user.level}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${user.total_missions}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex rounded-full ${user.is_admin ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'} px-2 text-xs font-semibold leading-5">
+                                    ${user.is_admin ? 'Admin' : 'User'}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <button onclick="deleteUser(${user.id})" class="text-red-600 hover:text-red-900 ml-4">Hapus</button>
+                            </td>
+                        `;
+                        userTableBody.appendChild(tr);
+                    });
+                }
+            } catch (error) {
+                console.error('Load users error:', error);
+                userTableBody.innerHTML = `<tr><td colspan="6" class="px-6 py-4 text-center text-red-500">Error: ${error.message}</td></tr>`;
+            }
         }
+        
+        window.deleteUser = async (id) => {
+            if (!window.confirm('Apakah Anda yakin ingin menghapus user ini?')) return;
+            try {
+                // Endpoint /api/admin/users/:id (DELETE)
+                await apiRequest(`/admin/users/${id}`, { method: 'DELETE' });
+                loadUsers();
+                loadDashboard(); // Update stats
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        };
 
-        // ========== BADGES MANAGEMENT ==========
+        // ========== BADGES MANAGEMENT (DIPERBARUI) ==========
         const badgeModal = document.getElementById('badge-modal');
         const badgeForm = document.getElementById('badge-form');
 
@@ -955,8 +1037,9 @@
 
         async function loadBadges() {
             try {
-                const data = await apiRequest('/profile/badges');
-                const badges = data.badges || [];
+                // --- PERBAIKAN: Baca 'data' langsung sebagai array ---
+                // Panggil endpoint /api/profile/badges (GET)
+                const badges = await apiRequest('/profile/badges') || [];
                 
                 const badgeList = document.getElementById('badge-list');
                 badgeList.innerHTML = '';
@@ -998,15 +1081,7 @@
             document.getElementById('badge-form-error').classList.add('hidden');
 
             if (badge) {
-                document.getElementById('badge-modal-title').textContent = 'Edit Badge';
-                document.getElementById('badge-id').value = badge.id;
-                document.getElementById('badge-name').value = badge.name || '';
-                document.getElementById('badge-description').value = badge.description || '';
-                document.getElementById('badge-icon').value = badge.icon_name || '';
-                document.getElementById('badge-color').value = badge.color || '';
-                document.getElementById('badge-requirement-type').value = badge.requirement_type || '';
-                document.getElementById('badge-requirement-value').value = badge.requirement_value || '';
-                document.getElementById('badge-requirement-category').value = badge.requirement_category || '';
+                // Fitur edit belum diimplementasi di backend
             } else {
                 document.getElementById('badge-modal-title').textContent = 'Tambah Badge Baru';
             }
@@ -1022,20 +1097,47 @@
 
         badgeForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            alert('Badge create/update functionality coming soon');
-            hideBadgeModal();
+            document.getElementById('badge-form-error').classList.add('hidden');
+            
+            const formData = new FormData(badgeForm);
+            const data = Object.fromEntries(formData.entries());
+            data.requirement_value = parseInt(data.requirement_value, 10);
+            if (data.requirement_category === "") {
+                delete data.requirement_category;
+            }
+
+            try {
+                // Panggil endpoint /api/admin/badges (POST)
+                await apiRequest('/admin/badges', {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+                hideBadgeModal();
+                loadBadges();
+                loadDashboard(); // Update stats
+            } catch (error) {
+                document.getElementById('badge-form-error').textContent = error.message;
+                document.getElementById('badge-form-error').classList.remove('hidden');
+            }
         });
 
         window.deleteBadge = async (id) => {
             if (!window.confirm('Apakah Anda yakin ingin menghapus badge ini?')) return;
-            alert('Delete badge functionality coming soon');
+            try {
+                // Panggil endpoint /api/admin/badges/:id (DELETE)
+                await apiRequest(`/admin/badges/${id}`, { method: 'DELETE' });
+                loadBadges();
+                loadDashboard(); // Update stats
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
         };
 
-        // ========== JOURNALS MANAGEMENT ==========
+        // ========== JOURNALS MANAGEMENT (DIPERBARUI) ==========
         async function loadJournals() {
             try {
-                const data = await apiRequest('/journals');
-                const journals = data.journals || [];
+                // --- PERBAIKAN: Baca 'data' langsung sebagai array ---
+                const journals = await apiRequest('/journals') || [];
                 
                 const journalList = document.getElementById('journal-list');
                 journalList.innerHTML = '';
@@ -1074,8 +1176,10 @@
             if (!window.confirm('Apakah Anda yakin ingin menghapus jurnal ini?')) return;
             
             try {
+                // Panggil endpoint /api/journals/:id (DELETE)
                 await apiRequest(`/journals/${id}`, { method: 'DELETE' });
                 loadJournals();
+                loadDashboard(); // Update stats
             } catch (error) {
                 alert('Error: ' + error.message);
             }

@@ -12,6 +12,12 @@ router.get('/mission/:missionId', trackingController.getMissionWithClues);
 // POST check lokasi user terhadap clue
 router.post('/check-location', trackingController.checkUserLocation);
 
+// POST untuk Skip Clue
+router.post('/skip-clue', trackingController.skipClue);
+
+// Endpoint untuk Reset Progress Misi 
+router.post('/reset-progress', trackingController.resetProgress);
+
 // GET clue terdekat dari posisi user
 router.get('/nearby-clues', trackingController.getNearbyClues);
 

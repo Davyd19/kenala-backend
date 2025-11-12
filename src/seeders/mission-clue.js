@@ -163,9 +163,45 @@ module.exports = {
         updated_at: new Date()
       }
     ]);
+
+    // --- TAMBAHAN BARU: Clues untuk Museum Adityawarman (mission_id: 4) ---
+    await queryInterface.bulkInsert('mission_clues', [
+      {
+        mission_id: 4, // Pastikan ini ID Museum Adityawarman dari 20250108-demo-data.js
+        clue_order: 1,
+        name: 'Gerbang Masuk',
+        description: 'Mulai dari gerbang masuk utama. Cari patung di halaman depan.',
+        hint_text: 'Gerbangnya ada di Jalan Diponegoro.',
+        latitude: -0.9405, // Sedikit di depan museum
+        longitude: 100.3615,
+        radius_meters: 40,
+        image_url: 'https://images.pexels.com/photos/1743165/pexels-photo-1743165.jpeg',
+        points_reward: 5,
+        is_required: true,
+        created_at: new Date(),
+        updated_at: new Date()
+      },
+      {
+        mission_id: 4,
+        clue_order: 2,
+        name: 'Taman Museum',
+        description: 'Temukan taman kecil di samping kiri gedung. Ada beberapa meriam tua di sini.',
+        hint_text: 'Jalan setapak di sebelah kiri gedung utama.',
+        latitude: -0.9408, // Di samping museum
+        longitude: 100.3613,
+        radius_meters: 30,
+        image_url: 'https://images.pexels.com/photos/1029328/pexels-photo-1029328.jpeg',
+        points_reward: 5,
+        is_required: true,
+        created_at: new Date(),
+        updated_at: new Date()
+      }
+    ]);
+    // --------------------------------------------------------------------
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.bulkDelete('mission_clues', null, {});
+    // Perbarui 'down' untuk menyertakan ID 4
+    await queryInterface.bulkDelete('mission_clues', { mission_id: [1, 2, 3, 4] }, {});
   }
 };

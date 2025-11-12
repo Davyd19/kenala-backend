@@ -16,8 +16,11 @@ exports.getMissionWithClues = async (req, res) => {
         {
           model: MissionClue,
           as: 'clues',
-          order: [['clue_order', 'ASC']]
         }
+      ],
+      // Pastikan clues di dalam include diurutkan
+      order: [
+        [{ model: MissionClue, as: 'clues' }, 'clue_order', 'ASC']
       ]
     });
 
@@ -41,17 +44,25 @@ exports.getMissionWithClues = async (req, res) => {
       is_completed: completedClueIds.includes(clue.id)
     }));
 
+    // --- PERBAIKAN BUG JSON MISMATCH ---
+    // 1. Ubah misi (induk) ke JSON
+    const missionData = mission.toJSON();
+    // 2. Hapus array 'clues' yang bersarang (nested) dari objek misi.
+    //    Frontend (MissionWithCluesResponse) mengharapkan 'clues' di level atas.
+    delete missionData.clues;
+
+    // 3. Kirim JSON dalam format yang benar sesuai DTO Android
     res.json({
-      mission: {
-        ...mission.toJSON(),
-        clues: cluesWithStatus
-      },
+      mission: missionData,     // Objek misi (tanpa clues)
+      clues: cluesWithStatus,   // Array clues (di top-level)
       progress: {
         completed_clues: completedClueIds.length,
         total_clues: mission.clues.length,
         is_mission_completed: completedClueIds.length === mission.clues.length
       }
     });
+    // ------------------------------------
+
   } catch (error) {
     console.error('Get mission with clues error:', error);
     res.status(500).json({ error: 'Gagal mengambil data misi' });
@@ -78,7 +89,40 @@ exports.checkUserLocation = async (req, res) => {
     });
 
     if (clues.length === 0) {
-      return res.status(404).json({ error: 'Tidak ada clue untuk misi ini' });
+      // Jika misi tidak memiliki clue, langsung cek ke tujuan akhir
+      const mission = await Mission.findByPk(mission_id);
+      const distanceToDestination = calculateDistance(
+        latitude,
+        longitude,
+        parseFloat(mission.latitude),
+        parseFloat(mission.longitude)
+      );
+
+      return res.json({
+        status: 'all_clues_completed',
+        message: 'Misi ini tidak memiliki petunjuk, langsung ke tujuan akhir.',
+        next_target: 'destination',
+        destination: {
+          name: mission.location_name,
+          latitude: mission.latitude.toString(),
+          longitude: mission.longitude.toString(),
+          distance: distanceToDestination,
+          formatted_distance: formatDistance(distanceToDestination),
+          message: getDistanceMessage(distanceToDestination),
+          is_arrived: isWithinRadius(distanceToDestination, 50)
+        },
+        current_clue: null,
+        distance: {
+            meters: distanceToDestination,
+            formatted: formatDistance(distanceToDestination),
+            message: getDistanceMessage(distanceToDestination)
+        },
+        progress: {
+            completed: 0,
+            total: 0,
+            next_clue_number: null
+        }
+      });
     }
 
     // Ambil progress user
@@ -110,12 +154,23 @@ exports.checkUserLocation = async (req, res) => {
         next_target: 'destination',
         destination: {
           name: mission.location_name,
-          latitude: mission.latitude,
-          longitude: mission.longitude,
+          latitude: mission.latitude.toString(), // Kirim sebagai String
+          longitude: mission.longitude.toString(), // Kirim sebagai String
           distance: distanceToDestination,
           formatted_distance: formatDistance(distanceToDestination),
           message: getDistanceMessage(distanceToDestination),
-          is_arrived: isWithinRadius(distanceToDestination, 50)
+          is_arrived: isWithinRadius(distanceToDestination, 50) // Radius 50m untuk tujuan akhir
+        },
+        current_clue: null,
+        distance: {
+            meters: distanceToDestination,
+            formatted: formatDistance(distanceToDestination),
+            message: getDistanceMessage(distanceToDestination)
+        },
+        progress: {
+            completed: clues.length,
+            total: clues.length,
+            next_clue_number: null
         }
       });
     }
@@ -129,35 +184,36 @@ exports.checkUserLocation = async (req, res) => {
     );
 
     const isInRadius = isWithinRadius(distanceToClue, nextClue.radius_meters);
+    let justReached = false;
 
-    // Jika dalam radius, otomatis mark sebagai completed
     if (isInRadius) {
-      await UserClueProgress.create({
-        user_id: req.user.id,
-        mission_id,
-        clue_id: nextClue.id,
-        distance_from_clue: distanceToClue
+      const existingProgress = await UserClueProgress.findOne({
+        where: { user_id: req.user.id, clue_id: nextClue.id }
       });
-
-      // Update user points
-      await User.increment('total_missions', {
-        by: nextClue.points_reward,
-        where: { id: req.user.id }
-      });
+      
+      if (!existingProgress) {
+        justReached = true; 
+        await UserClueProgress.create({
+          user_id: req.user.id,
+          mission_id,
+          clue_id: nextClue.id,
+          distance_from_clue: distanceToClue
+        });
+      }
     }
 
     res.json({
-      status: isInRadius ? 'clue_reached' : 'tracking',
-      clue_reached: isInRadius,
+      status: justReached ? 'clue_reached' : 'tracking',
+      clue_reached: justReached,
       current_clue: {
-        id: nextClue.id,
+        id: nextClue.id.toString(), // Kirim sebagai String
         order: nextClue.clue_order,
         name: nextClue.name,
         description: nextClue.description,
         hint: nextClue.hint_text,
         image_url: nextClue.image_url,
-        latitude: nextClue.latitude,
-        longitude: nextClue.longitude,
+        latitude: nextClue.latitude.toString(), // Kirim sebagai String
+        longitude: nextClue.longitude.toString(), // Kirim sebagai String
         radius: nextClue.radius_meters,
         points: nextClue.points_reward
       },
@@ -167,16 +223,154 @@ exports.checkUserLocation = async (req, res) => {
         message: getDistanceMessage(distanceToClue)
       },
       progress: {
-        completed: completedClueIds.length,
+        completed: completedClueIds.length + (justReached ? 1 : 0),
         total: clues.length,
-        next_clue_number: nextClue.clue_order
-      }
+        next_clue_number: justReached ? (nextClue.clue_order + 1) : nextClue.clue_order
+      },
+      destination: null 
     });
   } catch (error) {
     console.error('Check location error:', error);
     res.status(500).json({ error: 'Gagal mengecek lokasi' });
   }
 };
+
+/**
+ * @route   POST /api/tracking/skip-clue
+ * @desc    Melewatkan clue saat ini secara manual
+ * @access  Private
+ */
+exports.skipClue = async (req, res) => {
+  try {
+    const { mission_id, clue_id } = req.body;
+
+    if (!mission_id || !clue_id) {
+      return res.status(400).json({ error: 'mission_id dan clue_id diperlukan' });
+    }
+
+    // 1. Tandai clue sebagai selesai
+    const existingProgress = await UserClueProgress.findOne({
+      where: { user_id: req.user.id, clue_id: clue_id }
+    });
+
+    if (!existingProgress) {
+      await UserClueProgress.create({
+        user_id: req.user.id,
+        mission_id,
+        clue_id: clue_id,
+        distance_from_clue: 0, // 0 karena di-skip
+        reached_at: new Date()
+      });
+    }
+
+    // 2. Ambil semua clues untuk misi ini
+    const clues = await MissionClue.findAll({
+      where: { mission_id },
+      order: [['clue_order', 'ASC']]
+    });
+
+    // 3. Ambil progress user SETELAH di-skip
+    const completedClues = await UserClueProgress.findAll({
+      where: { user_id: req.user.id, mission_id }
+    });
+    const completedClueIds = completedClues.map(c => c.clue_id);
+
+    // 4. Cari clue berikutnya
+    const nextClue = clues.find(clue => !completedClueIds.includes(clue.id));
+
+    // 5. Kirim response
+    if (!nextClue) {
+      // --- PERUBAHAN YANG ANDA MINTA ---
+      // Jika TIDAK ADA clue berikutnya (ini adalah clue terakhir)
+      // Kirim status 'all_clues_completed' dan 'is_arrived: true'
+      const mission = await Mission.findByPk(mission_id);
+      return res.json({
+        status: 'all_clues_completed',
+        message: 'Clue terakhir dilewati! Misi Selesai!',
+        next_target: 'destination',
+        destination: {
+          name: mission.location_name,
+          latitude: mission.latitude.toString(),
+          longitude: mission.longitude.toString(),
+          distance: 0, 
+          formatted_distance: "0 m",
+          message: "Anda telah sampai!",
+          is_arrived: true // <-- INI PERUBAHANNYA
+        },
+        current_clue: null,
+        distance: { meters: 0, formatted: "0 m", message: "Anda telah sampai!" },
+        progress: {
+          completed: clues.length,
+          total: clues.length,
+          next_clue_number: null
+        }
+      });
+      // ---------------------------------
+    } else {
+      // Masih ada clue berikutnya, kirim data CLUE BERIKUTNYA
+      return res.json({
+        status: 'clue_reached', // Dianggap 'reached' karena kita kirim clue baru
+        clue_reached: true,
+        current_clue: {
+          id: nextClue.id.toString(),
+          order: nextClue.clue_order,
+          name: nextClue.name,
+          description: nextClue.description,
+          hint: nextClue.hint_text,
+          image_url: nextClue.image_url,
+          latitude: nextClue.latitude.toString(),
+          longitude: nextClue.longitude.toString(),
+          radius: nextClue.radius_meters,
+          points: nextClue.points_reward
+        },
+        distance: {
+          meters: 0, 
+          formatted: "0 m",
+          message: "Clue sebelumnya dilewati."
+        },
+        progress: {
+          completed: completedClueIds.length,
+          total: clues.length,
+          next_clue_number: nextClue.clue_order
+        },
+        destination: null
+      });
+    }
+
+  } catch (error) {
+    console.error('Skip clue error:', error);
+    res.status(500).json({ error: 'Gagal melewati clue' });
+  }
+};
+
+/**
+ * @route   POST /api/tracking/reset-progress
+ * @desc    Menghapus semua progress UserClueProgress untuk satu misi
+ * @access  Private
+ */
+exports.resetProgress = async (req, res) => {
+  try {
+    const { mission_id } = req.body;
+
+    if (!mission_id) {
+      return res.status(400).json({ error: 'mission_id diperlukan' });
+    }
+
+    await UserClueProgress.destroy({
+      where: {
+        user_id: req.user.id,
+        mission_id: mission_id
+      }
+    });
+
+    res.status(204).send();
+
+  } catch (error) {
+    console.error('Reset progress error:', error);
+    res.status(500).json({ error: 'Gagal me-reset progress misi' });
+  }
+};
+
 
 /**
  * @route   GET /api/tracking/nearby-clues
