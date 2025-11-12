@@ -30,6 +30,8 @@ db.Mission = require('./Mission')(sequelize, Sequelize);
 db.Badge = require('./Badge')(sequelize, Sequelize);
 db.UserBadge = require('./UserBadge')(sequelize, Sequelize);
 db.MissionCompletion = require('./MissionCompletion')(sequelize, Sequelize);
+db.MissionClue = require('./MissionClue')(sequelize, Sequelize);
+db.UserClueProgress = require('./UserClueProgress')(sequelize, Sequelize);
 
 // Define associations
 Object.keys(db).forEach(modelName => {

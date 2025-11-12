@@ -23,11 +23,13 @@ module.exports = (sequelize, DataTypes) => {
     },
     latitude: {
       type: DataTypes.DECIMAL(10, 8),
-      allowNull: false
+      allowNull: false,
+      comment: 'Koordinat tujuan akhir'
     },
     longitude: {
       type: DataTypes.DECIMAL(11, 8),
-      allowNull: false
+      allowNull: false,
+      comment: 'Koordinat tujuan akhir'
     },
     address: {
       type: DataTypes.TEXT,
@@ -44,7 +46,7 @@ module.exports = (sequelize, DataTypes) => {
     estimated_distance: {
       type: DataTypes.FLOAT,
       allowNull: true,
-      comment: 'Distance in km'
+      comment: 'Total jarak perjalanan (km)'
     },
     difficulty_level: {
       type: DataTypes.ENUM('Easy', 'Medium', 'Hard'),
@@ -52,7 +54,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     points: {
       type: DataTypes.INTEGER,
-      defaultValue: 10
+      defaultValue: 10,
+      comment: 'Poin untuk menyelesaikan seluruh misi'
     },
     is_active: {
       type: DataTypes.BOOLEAN,
@@ -71,6 +74,15 @@ module.exports = (sequelize, DataTypes) => {
     Mission.hasMany(models.MissionCompletion, {
       foreignKey: 'mission_id',
       as: 'completions'
+    });
+    // Relasi dengan Clues
+    Mission.hasMany(models.MissionClue, {
+      foreignKey: 'mission_id',
+      as: 'clues'
+    });
+    Mission.hasMany(models.UserClueProgress, {
+      foreignKey: 'mission_id',
+      as: 'userClueProgress'
     });
   };
 

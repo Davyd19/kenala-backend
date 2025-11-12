@@ -24,6 +24,7 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/journals', require('./routes/journals'));
 app.use('/api/missions', require('./routes/missions'));
 app.use('/api/profile', require('./routes/profile'));
+app.use('/api/tracking', require('./routes/tracking')); // Route baru untuk tracking
 
 // Health check
 app.get('/api/health', (req, res) => {
