@@ -136,3 +136,102 @@ exports.completeMission = async (req, res) => {
     res.status(500).json({ error: 'Failed to complete mission' });
   }
 };
+
+
+// --- FUNGSI BARU UNTUK ADMIN ---
+
+/**
+ * @route   POST /api/missions
+ * @desc    Membuat misi baru
+ * @access  Private (Admin)
+ */
+exports.createMission = async (req, res) => {
+  try {
+    const {
+      name,
+      description,
+      category,
+      location_name,
+      latitude,
+      longitude,
+      address,
+      image_url,
+      budget_category,
+      estimated_distance,
+      difficulty_level,
+      points
+    } = req.body;
+
+    // Validasi dasar
+    if (!name || !category || !location_name || !latitude || !longitude) {
+      return res.status(400).json({ error: 'Field wajib (name, category, location_name, latitude, longitude) harus diisi' });
+    }
+
+    const mission = await Mission.create({
+      name,
+      description,
+      category,
+      location_name,
+      latitude,
+      longitude,
+      address,
+      image_url,
+      budget_category,
+      estimated_distance,
+      difficulty_level,
+      points,
+      is_active: true // Default
+    });
+
+    res.status(201).json({ mission });
+  } catch (error) {
+    console.error('Create mission error:', error);
+    res.status(500).json({ error: 'Gagal membuat misi baru' });
+  }
+};
+
+/**
+ * @route   PUT /api/missions/:id
+ * @desc    Memperbarui misi
+ * @access  Private (Admin)
+ */
+exports.updateMission = async (req, res) => {
+  try {
+    const mission = await Mission.findByPk(req.params.id);
+
+    if (!mission) {
+      return res.status(404).json({ error: 'Misi tidak ditemukan' });
+    }
+
+    // Update misi dengan data dari req.body
+    await mission.update(req.body);
+
+    res.json({ mission });
+  } catch (error) {
+    console.error('Update mission error:', error);
+    res.status(500).json({ error: 'Gagal memperbarui misi' });
+  }
+};
+
+/**
+ * @route   DELETE /api/missions/:id
+ * @desc    Menghapus misi
+ * @access  Private (Admin)
+ */
+exports.deleteMission = async (req, res) => {
+  try {
+    const mission = await Mission.findByPk(req.params.id);
+
+    if (!mission) {
+      return res.status(404).json({ error: 'Misi tidak ditemukan' });
+    }
+
+    await mission.destroy();
+
+    res.json({ message: 'Misi berhasil dihapus' });
+  } catch (error)
+    {
+    console.error('Delete mission error:', error);
+    res.status(500).json({ error: 'Gagal menghapus misi' });
+  }
+};

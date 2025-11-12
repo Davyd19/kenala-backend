@@ -11,4 +11,13 @@ router.get('/random', missionController.getRandomMission);
 router.get('/:id', missionController.getMission);
 router.post('/complete', missionController.completeMission);
 
+// POST /api/missions/ (Membuat Misi baru)
+router.post('/', missionController.createMission);
+
+// PUT /api/missions/:id (Memperbarui Misi)
+router.put('/:id', missionController.updateMission);
+
+// DELETE /api/missions/:id (Menghapus Misi)
+router.delete('/:id', missionController.deleteMission);
+
 module.exports = router;

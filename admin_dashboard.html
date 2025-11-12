@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full bg-gray-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kenala Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #a8a8a8;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #888;
+        }
+        /* Mengganti warna primary-blue dan accent-yellow dari app Anda */
+        .bg-primary-blue { background-color: #002364; }
+        .text-primary-blue { color: #002364; }
+        .bg-deep-blue { background-color: #001845; }
+        .text-accent-yellow { color: #F8C104; }
+        .bg-accent-yellow { background-color: #F8C104; }
+        .hover\:bg-accent-yellow-dark:hover { background-color: #F9A825; }
+        .border-accent-yellow { border-color: #F8C104; }
+        .ring-accent-yellow:focus { ring-color: #F8C104; }
+    </style>
+</head>
+<body class="h-full">
+
+    <!-- Kontainer Login -->
+    <div id="login-screen" class="flex min-h-full items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="w-full max-w-md space-y-8">
+            <div>
+                <h2 class="mt-6 text-center text-3xl font-bold tracking-tight text-primary-blue">
+                    Kenala Admin Dashboard
+                </h2>
+                <p class="mt-2 text-center text-sm text-gray-600">
+                    Silakan login dengan akun admin Anda
+                </p>
+            </div>
+            <form id="login-form" class="mt-8 space-y-6" action="#" method="POST">
+                <div class="space-y-4 rounded-md shadow-sm">
+                    <div>
+                        <label for="email-address" class="sr-only">Email</label>
+                        <input id="email-address" name="email" type="email" autocomplete="email" required
+                            class="relative block w-full appearance-none rounded-lg border border-gray-300 px-3 py-3 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-accent-yellow focus:outline-none focus:ring-accent-yellow sm:text-sm"
+                            placeholder="Email">
+                    </div>
+                    <div>
+                        <label for="password" class="sr-only">Password</label>
+                        <input id="password" name="password" type="password" autocomplete="current-password" required
+                            class="relative block w-full appearance-none rounded-lg border border-gray-300 px-3 py-3 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-accent-yellow focus:outline-none focus:ring-accent-yellow sm:text-sm"
+                            placeholder="Password">
+                    </div>
+                </div>
+                <div id="login-error" class="text-sm text-red-600 hidden"></div>
+                <div>
+                    <button type="submit"
+                        class="group relative flex w-full justify-center rounded-md border border-transparent bg-primary-blue py-3 px-4 text-sm font-medium text-white hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        Login
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Kontainer Dashboard Utama (disembunyikan awalnya) -->
+    <div id="dashboard" class="hidden h-full md:flex">
+        <!-- Sidebar -->
+        <nav class="flex w-64 flex-col bg-deep-blue text-white">
+            <div class="flex items-center justify-center p-6 text-2xl font-bold text-accent-yellow">
+                KENALA ADMIN
+            </div>
+            <div class="flex-1 space-y-2 p-4">
+                <a href="#" class="flex items-center space-x-3 rounded-lg bg-primary-blue p-3 font-medium">
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="flex items-center space-x-3 rounded-lg p-3 hover:bg-primary-blue">
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <span>Manajemen Misi</span>
+                </a>
+                <a href="#" class="flex items-center space-x-3 rounded-lg p-3 opacity-60 hover:bg-primary-blue">
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    <span>Manajemen User</span>
+                </a>
+                 <a href="#" class="flex items-center space-x-3 rounded-lg p-3 opacity-60 hover:bg-primary-blue">
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
+                    <span>Manajemen Badge</span>
+                </a>
+                <a href="#" class="flex items-center space-x-3 rounded-lg p-3 opacity-60 hover:bg-primary-blue">
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    <span>Moderasi Jurnal</span>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Konten Utama -->
+        <main class="flex-1 overflow-y-auto bg-gray-100 p-8">
+            <div class="mb-6 flex items-center justify-between">
+                <h1 class="text-3xl font-bold text-primary-blue">Manajemen Misi (Tempat)</h1>
+                <button id="show-modal-btn"
+                    class="rounded-lg bg-accent-yellow py-2 px-4 font-medium text-deep-blue hover:bg-accent-yellow-dark">
+                    + Tambah Misi Baru
+                </button>
+            </div>
+
+            <!-- Tabel Misi -->
+            <div class="overflow-hidden rounded-lg bg-white shadow">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Nama Misi</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Kategori</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Lokasi</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mission-table-body" class="divide-y divide-gray-200 bg-white">
+                        <!-- Data akan diisi oleh JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Tambah/Edit Misi (disembunyikan awalnya) -->
+    <div id="mission-modal" class="pointer-events-none fixed inset-0 z-50 flex items-center justify-center overflow-y-auto opacity-0 transition-opacity duration-300">
+        <!-- Latar belakang overlay -->
+        <div class="absolute inset-0 bg-gray-800 bg-opacity-75"></div>
+
+        <!-- Konten Modal -->
+        <form id="mission-form" class="relative z-10 w-full max-w-3xl scale-95 transform rounded-lg bg-white shadow-xl transition-all duration-300">
+            <div class="flex items-center justify-between border-b border-gray-200 p-4">
+                <h3 id="modal-title" class="text-xl font-medium text-primary-blue">Tambah Misi Baru</h3>
+                <button id="close-modal-btn" type="button" class="text-gray-400 hover:text-gray-600">
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <!-- Form Body -->
+            <div class="max-h-[70vh] space-y-4 overflow-y-auto p-6">
+                <input type="hidden" id="mission-id" name="id">
+
+                <!-- Baris 1: Nama & Kategori -->
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700">Nama Misi</label>
+                        <input type="text" id="name" name="name" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm">
+                    </div>
+                    <div>
+                        <label for="category" class="block text-sm font-medium text-gray-700">Kategori</label>
+                        <select id="category" name="category" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm">
+                            <option>Kuliner</option>
+                            <option>Rekreasi</option>
+                            <option>Seni & Budaya</option>
+                            <option>Sejarah</option>
+                            <option>Belanja</option>
+                            <option>Alam</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Baris 2: Nama Lokasi -->
+                <div>
+                    <label for="location_name" class="block text-sm font-medium text-gray-700">Nama Lokasi</label>
+                    <input type="text" id="location_name" name="location_name" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm"
+                        placeholder="Contoh: Kopi Seroja, Padang">
+                </div>
+                
+                <!-- Baris 3: Lat & Lng -->
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div>
+                        <label for="latitude" class="block text-sm font-medium text-gray-700">Latitude</label>
+                        <input type="number" step="any" id="latitude" name="latitude" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm"
+                            placeholder="-0.9471">
+                    </div>
+                    <div>
+                        <label for="longitude" class="block text-sm font-medium text-gray-700">Longitude</label>
+                        <input type="number" step="any" id="longitude" name="longitude" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm"
+                            placeholder="100.4172">
+                    </div>
+                </div>
+
+                <!-- Baris 4: Alamat -->
+                <div>
+                    <label for="address" class="block text-sm font-medium text-gray-700">Alamat</label>
+                    <input type="text" id="address" name="address"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm"
+                        placeholder="Jl. Pemuda No. 45, Padang">
+                </div>
+
+                <!-- Baris 5: Deskripsi -->
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700">Deskripsi</label>
+                    <textarea id="description" name="description" rows="3"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm"
+                        placeholder="Kedai kopi tersembunyi..."></textarea>
+                </div>
+                
+                <!-- Baris 6: Image URL -->
+                <div>
+                    <label for="image_url" class="block text-sm font-medium text-gray-700">URL Gambar</label>
+                    <input type="url" id="image_url" name="image_url"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm"
+                        placeholder="https://.../gambar.jpg">
+                </div>
+                
+                <!-- Baris 7: Budget, Jarak, Kesulitan, Poin -->
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
+                     <div>
+                        <label for="budget_category" class="block text-sm font-medium text-gray-700">Budget</label>
+                        <select id="budget_category" name="budget_category"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm">
+                            <option>Gratis</option>
+                            <option selected>Terjangkau</option>
+                            <option>Menengah</option>
+                            <option>Mewah</option>
+                        </select>
+                    </div>
+                     <div>
+                        <label for="estimated_distance" class="block text-sm font-medium text-gray-700">Jarak (km)</label>
+                        <input type="number" step="0.1" id="estimated_distance" name="estimated_distance"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm"
+                            placeholder="2.5">
+                    </div>
+                    <div>
+                        <label for="difficulty_level" class="block text-sm font-medium text-gray-700">Kesulitan</LAbel>
+                        <select id="difficulty_level" name="difficulty_level"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm">
+                            <option>Easy</option>
+                            <option selected>Medium</option>
+                            <option>Hard</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="points" class="block text-sm font-medium text-gray-700">Poin</label>
+                        <input type="number" id="points" name="points" value="10"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-yellow focus:ring-accent-yellow sm:text-sm">
+                    </div>
+                </div>
+
+                <div id="form-error" class="text-sm text-red-600 hidden"></div>
+            </div>
+
+            <!-- Form Footer -->
+            <div class="flex items-center justify-end space-x-3 border-t border-gray-200 bg-gray-50 p-4">
+                <button id="cancel-modal-btn" type="button"
+                    class="rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    Batal
+                </button>
+                <button type="submit"
+                    class="rounded-md border border-transparent bg-accent-yellow py-2 px-4 text-sm font-medium text-deep-blue shadow-sm hover:bg-accent-yellow-dark focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2">
+                    Simpan Misi
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- STATE ---
+            let token = null;
+            let currentEditingId = null;
+            // Ganti ini ke URL backend Anda jika berbeda
+            const API_URL = 'http://localhost:5000/api'; 
+
+            // --- DOM ELEMENTS ---
+            const loginScreen = document.getElementById('login-screen');
+            const dashboard = document.getElementById('dashboard');
+            const loginForm = document.getElementById('login-form');
+            const loginError = document.getElementById('login-error');
+
+            const missionTableBody = document.getElementById('mission-table-body');
+            const showModalBtn = document.getElementById('show-modal-btn');
+            const modal = document.getElementById('mission-modal');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const cancelModalBtn = document.getElementById('cancel-modal-btn');
+            const missionForm = document.getElementById('mission-form');
+            const modalTitle = document.getElementById('modal-title');
+            const formError = document.getElementById('form-error');
+
+            // --- FUNCTIONS ---
+
+            /**
+             * Menampilkan/menyembunyikan modal
+             * @param {boolean} show - Tampilkan (true) atau sembunyikan (false)
+             * @param {object|null} mission - Data misi untuk mode edit
+             */
+            function showModal(show, mission = null) {
+                if (show) {
+                    missionForm.reset();
+                    formError.classList.add('hidden');
+                    formError.textContent = '';
+                    currentEditingId = null;
+
+                    if (mission) {
+                        // Mode Edit
+                        modalTitle.textContent = 'Edit Misi';
+                        document.getElementById('mission-id').value = mission.id;
+                        document.getElementById('name').value = mission.name || '';
+                        document.getElementById('category').value = mission.category || 'Kuliner';
+                        document.getElementById('location_name').value = mission.location_name || '';
+                        document.getElementById('latitude').value = mission.latitude || '';
+                        document.getElementById('longitude').value = mission.longitude || '';
+                        document.getElementById('address').value = mission.address || '';
+                        document.getElementById('description').value = mission.description || '';
+                        document.getElementById('image_url').value = mission.image_url || '';
+                        document.getElementById('budget_category').value = mission.budget_category || 'Terjangkau';
+                        document.getElementById('estimated_distance').value = mission.estimated_distance || '';
+                        document.getElementById('difficulty_level').value = mission.difficulty_level || 'Medium';
+                        document.getElementById('points').value = mission.points || 10;
+                        currentEditingId = mission.id;
+                    } else {
+                        // Mode Create
+                        modalTitle.textContent = 'Tambah Misi Baru';
+                    }
+                    
+                    modal.classList.remove('pointer-events-none', 'opacity-0');
+                    modal.querySelector('form').classList.remove('scale-95');
+                } else {
+                    modal.classList.add('pointer-events-none', 'opacity-0');
+                    modal.querySelector('form').classList.add('scale-95');
+                }
+            }
+
+            /**
+             * Melakukan login ke backend
+             */
+            async function handleLogin(e) {
+                e.preventDefault();
+                loginError.classList.add('hidden');
+                const email = document.getElementById('email-address').value;
+                const password = document.getElementById('password').value;
+
+                try {
+                    const response = await fetch(`${API_URL}/auth/login`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password })
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Login gagal');
+                    }
+
+                    token = data.token;
+                    loginScreen.classList.add('hidden');
+                    dashboard.classList.remove('hidden');
+                    loadMissions();
+                } catch (error) {
+                    loginError.textContent = error.message;
+                    loginError.classList.remove('hidden');
+                }
+            }
+
+            /**
+             * Memuat semua misi dari API dan menampilkannya di tabel
+             */
+            async function loadMissions() {
+                if (!token) return;
+
+                try {
+                    const response = await fetch(`${API_URL}/missions`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Gagal memuat misi');
+                    }
+
+                    const missions = data.missions || data; // Menyesuaikan jika API Anda mengembalikan array langsung
+                    
+                    missionTableBody.innerHTML = ''; // Kosongkan tabel
+                    if (missions.length === 0) {
+                         missionTableBody.innerHTML = '<tr><td colspan="4" class="px-6 py-4 text-center text-gray-500">Belum ada misi.</td></tr>';
+                    } else {
+                        missions.forEach(renderMissionRow);
+                    }
+                } catch (error) {
+                    missionTableBody.innerHTML = `<tr><td colspan="4" class="px-6 py-4 text-center text-red-500">Error: ${error.message}</td></tr>`;
+                }
+            }
+
+            /**
+             * Merender satu baris misi ke dalam tabel
+             */
+            function renderMissionRow(mission) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">${mission.name}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex rounded-full bg-blue-100 px-2 text-xs font-semibold leading-5 text-blue-800">
+                            ${mission.category}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${mission.location_name}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button data-id="${mission.id}" class="edit-btn text-blue-600 hover:text-blue-900">Edit</button>
+                        <button data-id="${mission.id}" class="delete-btn text-red-600 hover:text-red-900 ml-4">Hapus</button>
+                    </td>
+                `;
+                missionTableBody.appendChild(tr);
+            }
+
+            /**
+             * Menangani submit form (Create atau Update)
+             */
+            async function handleFormSubmit(e) {
+                e.preventDefault();
+                formError.classList.add('hidden');
+
+                const formData = new FormData(missionForm);
+                const data = Object.fromEntries(formData.entries());
+                
+                // Konversi string angka ke number
+                data.latitude = parseFloat(data.latitude);
+                data.longitude = parseFloat(data.longitude);
+                data.points = parseInt(data.points, 10);
+                if (data.estimated_distance) {
+                    data.estimated_distance = parseFloat(data.estimated_distance);
+                } else {
+                    delete data.estimated_distance; // Hapus jika kosong
+                }
+
+                const url = currentEditingId
+                    ? `${API_URL}/missions/${currentEditingId}`
+                    : `${API_URL}/missions`;
+                
+                const method = currentEditingId ? 'PUT' : 'POST';
+
+                try {
+                    const response = await fetch(url, {
+                        method: method,
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(result.error || 'Gagal menyimpan misi');
+                    }
+
+                    showModal(false);
+                    loadMissions();
+                } catch (error) {
+                    formError.textContent = error.message;
+                    formError.classList.remove('hidden');
+                }
+            }
+
+            /**
+             * Mengambil data misi untuk diedit
+             */
+            async function handleEdit(id) {
+                 try {
+                    const response = await fetch(`${API_URL}/missions/${id}`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Gagal mengambil data misi');
+                    }
+                    
+                    const mission = data.mission || data; // Menyesuaikan jika API mengembalikan {mission: ...}
+                    showModal(true, mission);
+
+                } catch (error) {
+                    alert('Error: ' + error.message);
+                }
+            }
+
+            /**
+             * Menghapus misi
+             */
+            async function handleDelete(id) {
+                // Aturan proyek melarang confirm()
+                // if (!confirm('Apakah Anda yakin ingin menghapus misi ini?')) {
+                //     return;
+                // }
+
+                try {
+                    const response = await fetch(`${API_URL}/missions/${id}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Gagal menghapus misi');
+                    }
+                    
+                    loadMissions();
+                } catch (error) {
+                    alert('Error: ' + error.message);
+                }
+            }
+
+
+            // --- EVENT LISTENERS ---
+            loginForm.addEventListener('submit', handleLogin);
+            showModalBtn.addEventListener('click', () => showModal(true));
+            closeModalBtn.addEventListener('click', () => showModal(false));
+            cancelModalBtn.addEventListener('click', () => showModal(false));
+            missionForm.addEventListener('submit', handleFormSubmit);
+
+            // Event delegation untuk tombol Edit dan Hapus
+            missionTableBody.addEventListener('click', e => {
+                if (e.target.classList.contains('edit-btn')) {
+                    handleEdit(e.target.dataset.id);
+                }
+                if (e.target.classList.contains('delete-btn')) {
+                    handleDelete(e.target.dataset.id);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
