@@ -39,6 +39,8 @@ app.use('/api/admin', require('./routes/admin')); // Admin routes
 // --- TAMBAHAN BARU ---
 // Menambahkan rute untuk upload
 app.use('/api/upload', require('./routes/upload'));
+// Menambahkan rute untuk suggestions
+app.use('/api/suggestions', require('./routes/suggestions'));
 // ---------------------
 
 // Admin dashboard route

@@ -505,6 +505,55 @@ module.exports = {
       }
     });
 
+    // --- TAMBAHAN BARU: Tabel Suggestions ---
+    await queryInterface.createTable('suggestions', {
+      id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false
+      },
+      user_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'users',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+      },
+      location_name: {
+        type: Sequelize.STRING(200),
+        allowNull: false
+      },
+      category: {
+        type: Sequelize.STRING(100),
+        allowNull: false
+      },
+      description: {
+        type: Sequelize.TEXT,
+        allowNull: false
+      },
+      status: {
+        type: Sequelize.ENUM('pending', 'approved', 'rejected'),
+        defaultValue: 'pending',
+        allowNull: false
+      },
+      created_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      },
+      updated_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP')
+      }
+    });
+    // --- AKHIR TAMBAHAN BARU ---
+
+
     // Add indexes
     await queryInterface.addIndex('mission_clues', ['mission_id']);
     await queryInterface.addIndex('mission_clues', ['clue_order']);
@@ -534,10 +583,19 @@ module.exports = {
     await queryInterface.addIndex('mission_completions', ['completed_at']);
     await queryInterface.addIndex('missions', ['category']);
     await queryInterface.addIndex('missions', ['is_active']);
+    
+    // --- TAMBAHAN BARU: Index untuk Suggestions ---
+    await queryInterface.addIndex('suggestions', ['user_id']);
+    await queryInterface.addIndex('suggestions', ['status']);
+    // --- AKHIR TAMBAHAN BARU ---
   },
 
   down: async (queryInterface, Sequelize) => {
     // Drop tables in reverse order (to handle foreign keys)
+
+    // --- TAMBAHAN BARU: Drop Suggestions ---
+    await queryInterface.dropTable('suggestions');
+    // --- AKHIR TAMBAHAN BARU ---
 
     // --- TAMBAHAN DARI cluesTable.js ---
     await queryInterface.dropTable('user_clue_progress');

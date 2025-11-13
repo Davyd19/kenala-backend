@@ -8,7 +8,8 @@ const {
   Badge, 
   Journal, 
   MissionCompletion,
-  UserBadge 
+  UserBadge,
+  Suggestion
 } = require('../models');
 const { Op } = require('sequelize');
 
@@ -384,6 +385,97 @@ router.get('/analytics', async (req, res) => {
   } catch (error) {
     console.error('Get analytics error:', error);
     res.status(500).json({ error: 'Failed to fetch analytics' });
+  }
+});
+// --- TAMBAHAN BARU: RUTE UNTUK MANAJEMEN SARAN (SUGGESTION) ---
+
+/**
+ * @route   GET /api/admin/suggestions
+ * @desc    Get all user suggestions
+ * @access  Private (Admin)
+ */
+router.get('/suggestions', async (req, res) => {
+  try {
+    const suggestions = await Suggestion.findAll({
+      include: [{
+        model: User,
+        as: 'user',
+        attributes: ['id', 'name', 'email']
+      }],
+      order: [['status', 'ASC'], ['created_at', 'DESC']]
+    });
+    res.json({ suggestions });
+  } catch (error) {
+    console.error('Get all suggestions error:', error);
+    res.status(500).json({ error: 'Failed to fetch suggestions' });
+  }
+});
+
+/**
+ * @route   GET /api/admin/suggestions/:id
+ * @desc    Get detail of a single suggestion
+ * @access  Private (Admin)
+ */
+router.get('/suggestions/:id', async (req, res) => {
+  try {
+    const suggestion = await Suggestion.findByPk(req.params.id, {
+      include: [{
+        model: User,
+        as: 'user',
+        attributes: ['id', 'name', 'email']
+      }]
+    });
+    if (!suggestion) {
+      return res.status(404).json({ error: 'Suggestion not found' });
+    }
+    res.json({ suggestion });
+  } catch (error) {
+    console.error('Get suggestion detail error:', error);
+    res.status(500).json({ error: 'Failed to fetch suggestion detail' });
+  }
+});
+
+/**
+ * @route   PUT /api/admin/suggestions/:id
+ * @desc    Update suggestion status (approve/reject)
+ * @access  Private (Admin)
+ */
+router.put('/suggestions/:id', async (req, res) => {
+  try {
+    const { status } = req.body;
+    if (!['pending', 'approved', 'rejected'].includes(status)) {
+      return res.status(400).json({ error: 'Invalid status' });
+    }
+
+    const suggestion = await Suggestion.findByPk(req.params.id);
+    if (!suggestion) {
+      return res.status(404).json({ error: 'Suggestion not found' });
+    }
+
+    await suggestion.update({ status });
+    res.json({ suggestion });
+  } catch (error) {
+    console.error('Update suggestion status error:', error);
+    res.status(500).json({ error: 'Failed to update suggestion' });
+  }
+});
+
+/**
+ * @route   DELETE /api/admin/suggestions/:id
+ * @desc    Delete a suggestion
+ * @access  Private (Admin)
+ */
+router.delete('/suggestions/:id', async (req, res) => {
+  try {
+    const suggestion = await Suggestion.findByPk(req.params.id);
+    if (!suggestion) {
+      return res.status(404).json({ error: 'Suggestion not found' });
+    }
+    await suggestion.destroy();
+    res.status(204).send();
+  } catch (error) {
+    console.error('Delete suggestion error:', error);
+    res.status(500).json({ error: 'Failed to delete suggestion' });
   }
 });
 
