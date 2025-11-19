@@ -36,7 +36,7 @@ exports.getSuggestionById = async (req, res) => {
 // Create a new suggestion
 exports.createSuggestion = async (req, res) => {
   try {
-    const { location_name, category, description } = req.body;
+    const { location_name, category, description, address } = req.body;
 
     if (!location_name || !category || !description) {
       return res.status(400).json({ error: 'All fields are required' });
@@ -45,6 +45,7 @@ exports.createSuggestion = async (req, res) => {
     const suggestion = await Suggestion.create({
       user_id: req.user.id,
       location_name,
+      address,
       category,
       description,
       status: 'pending'
@@ -60,7 +61,7 @@ exports.createSuggestion = async (req, res) => {
 // Update a suggestion (only if pending)
 exports.updateSuggestion = async (req, res) => {
   try {
-    const { location_name, category, description } = req.body;
+    const { location_name, category, description, address } = req.body;
     const suggestion = await Suggestion.findOne({
       where: {
         id: req.params.id,
@@ -77,7 +78,7 @@ exports.updateSuggestion = async (req, res) => {
     }
 
     await suggestion.update({
-      location_name: location_name || suggestion.location_name,
+      location_name: location_name || suggestion.location_name, address: address !== undefined ? address : suggestion.address,
       category: category || suggestion.category,
       description: description || suggestion.description
     });
