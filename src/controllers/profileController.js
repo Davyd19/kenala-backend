@@ -4,9 +4,31 @@ const {
   UserBadge,
   Journal,
   MissionCompletion,
-  Mission, // <--- PERBAIKAN 1: Tambahkan import Mission
+  Mission,
 } = require("../models");
-const { Op } = require("sequelize"); // <--- PERBAIKAN 2: Tambahkan import Op
+const { Op } = require("sequelize");
+
+// --- HELPER: Cek apakah streak masih valid ---
+// Jika aktivitas terakhir bukan hari ini atau kemarin, maka streak dianggap 0 (putus)
+const getEffectiveStreak = (user) => {
+  if (!user.last_active_date || !user.current_streak) return 0;
+
+  // Gunakan UTC untuk konsistensi tanggal di server
+  const today = new Date().toISOString().split('T')[0];
+  
+  const yesterdayDate = new Date();
+  yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+  const yesterday = yesterdayDate.toISOString().split('T')[0];
+
+  // Streak valid jika aktivitas terakhir adalah hari ini atau kemarin
+  if (user.last_active_date === today || user.last_active_date === yesterday) {
+    return user.current_streak;
+  }
+  
+  // Jika lebih lama dari kemarin, streak dianggap putus (0)
+  return 0;
+};
+// ---------------------------------------------
 
 // Get user profile
 exports.getProfile = async (req, res) => {
@@ -22,11 +44,13 @@ exports.getProfile = async (req, res) => {
       ],
     });
 
-    // --- PERBAIKAN 3 ---
-    // Kirim objek user secara langsung, bukan di dalam { user: ... }
-    // agar sesuai dengan Response<UserDto> di ApiService.kt
-    res.json(user);
-    // -------------------
+    // Konversi ke JSON agar kita bisa memodifikasi nilai current_streak sebelum dikirim
+    const userJson = user.toJSON();
+    
+    // Inject effective streak agar tampilan UI akurat (0 jika putus)
+    userJson.current_streak = getEffectiveStreak(user);
+
+    res.json(userJson);
   } catch (error) {
     console.error("Get profile error:", error);
     res.status(500).json({ error: "Failed to fetch profile" });
@@ -52,11 +76,10 @@ exports.updateProfile = async (req, res) => {
       attributes: { exclude: ["password"] },
     });
 
-    // --- PERBAIKAN 4 ---
-    // Kirim objek updatedUser secara langsung, bukan di dalam { user: ... }
-    // agar sesuai dengan Response<UserDto> di ApiService.kt
+    // Di sini kita tidak perlu menghitung effective streak karena update profil
+    // tidak mempengaruhi streak (hanya misi yang mempengaruhi).
+    // Namun untuk konsistensi, kita bisa kembalikan apa adanya.
     res.json(updatedUser);
-    // -------------------
   } catch (error) {
     console.error("Update profile error:", error);
     res.status(500).json({ error: "Failed to update profile" });
@@ -101,18 +124,15 @@ exports.getStats = async (req, res) => {
       level: user.level,
       total_missions: user.total_missions,
       total_distance: user.total_distance,
-      current_streak: user.current_streak,
+      // Gunakan effective streak di sini juga
+      current_streak: getEffectiveStreak(user),
       longest_streak: user.longest_streak,
       total_active_days: user.total_active_days,
       journal_count: journalCount,
       category_breakdown: categoryCounts,
     };
 
-    // --- PERBAIKAN 5 ---
-    // Kirim objek stats secara langsung, bukan di dalam { stats: ... }
-    // agar sesuai dengan Response<StatsDto> di ApiService.kt
     res.json(stats);
-    // -------------------
   } catch (error) {
     console.error("Get stats error:", error);
     res.status(500).json({ error: "Failed to fetch statistics" });
@@ -148,18 +168,14 @@ exports.getBadges = async (req, res) => {
       };
     });
 
-    // --- PERBAIKAN 6 ---
-    // Kirim array badges secara langsung, bukan di dalam { badges: ... }
-    // agar sesuai dengan Response<List<BadgeDto>> di ApiService.kt
     res.json(badgesWithStatus);
-    // -------------------
   } catch (error) {
     console.error("Get badges error:", error);
     res.status(500).json({ error: "Failed to fetch badges" });
   }
 };
 
-// Get streak data
+// Get streak data detail
 exports.getStreakData = async (req, res) => {
   try {
     const user = await User.findByPk(req.user.id, {
@@ -186,7 +202,7 @@ exports.getStreakData = async (req, res) => {
       order: [["completed_at", "DESC"]],
     });
 
-    // Group by date
+    // Group by date for calendar view
     const activityByDate = {};
     recentCompletions.forEach((completion) => {
       const date = completion.completed_at.toISOString().split("T")[0];
@@ -194,7 +210,8 @@ exports.getStreakData = async (req, res) => {
     });
 
     res.json({
-      current_streak: user.current_streak,
+      // Gunakan effective streak agar user melihat 0 jika sudah putus
+      current_streak: getEffectiveStreak(user),
       longest_streak: user.longest_streak,
       total_active_days: user.total_active_days,
       last_active_date: user.last_active_date,
