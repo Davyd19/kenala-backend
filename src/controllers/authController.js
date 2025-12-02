@@ -100,3 +100,36 @@ exports.getCurrentUser = async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 };
+
+exports.changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    // 1. Validasi input
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ error: 'Mohon isi password saat ini dan password baru' });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ error: 'Password baru minimal 6 karakter' });
+    }
+
+    // 2. Ambil user dari database (req.user.id dari middleware auth)
+    const user = await User.findByPk(req.user.id);
+
+    // 3. Cek apakah password lama benar
+    const isMatch = await user.comparePassword(currentPassword);
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Password saat ini salah' });
+    }
+
+    // 4. Update password (hook 'beforeUpdate' di model User akan otomatis meng-hash password baru)
+    user.password = newPassword;
+    await user.save();
+
+    res.json({ message: 'Password berhasil diubah' });
+  } catch (error) {
+    console.error('Change password error:', error);
+    res.status(500).json({ error: 'Gagal mengubah password' });
+  }
+};
