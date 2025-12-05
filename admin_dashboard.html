@@ -21,7 +21,6 @@
     </style>
 </head>
 <body class="h-full">
-    <!-- Login Screen -->
     <div id="login-screen" class="flex min-h-full items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div class="w-full max-w-md space-y-8">
             <div>
@@ -58,9 +57,7 @@
         </div>
     </div>
 
-    <!-- Dashboard Main -->
     <div id="dashboard" class="hidden h-full md:flex">
-        <!-- Sidebar -->
         <nav class="flex w-64 flex-col bg-deep-blue text-white">
             <div class="flex items-center justify-center p-6 text-2xl font-bold text-accent-yellow">
                 KENALA ADMIN
@@ -103,9 +100,7 @@
             </div>
         </nav>
 
-        <!-- Main Content -->
         <main class="flex-1 overflow-y-auto bg-gray-100 p-8">
-            <!-- Dashboard Overview -->
             <div id="page-dashboard" class="page-content">
                 <h1 class="mb-6 text-3xl font-bold text-primary-blue">Dashboard Overview</h1>
                 
@@ -136,7 +131,6 @@
                 </div>
             </div>
 
-            <!-- Missions Management -->
             <div id="page-missions" class="page-content hidden">
                 <div class="mb-6 flex items-center justify-between">
                     <h1 class="text-3xl font-bold text-primary-blue">Manajemen Misi</h1>
@@ -163,7 +157,6 @@
                 </div>
             </div>
 
-            <!-- Clues Management -->
             <div id="page-clues" class="page-content hidden">
                 <div class="mb-6 flex items-center justify-between">
                     <h1 class="text-3xl font-bold text-primary-blue">Manajemen Clue</h1>
@@ -198,7 +191,6 @@
                 </div>
             </div>
 
-            <!-- Users Management -->
             <div id="page-users" class="page-content hidden">
                 <h1 class="mb-6 text-3xl font-bold text-primary-blue">Manajemen User</h1>
                 
@@ -220,7 +212,6 @@
                 </div>
             </div>
 
-            <!-- Badges Management -->
             <div id="page-badges" class="page-content hidden">
                 <div class="mb-6 flex items-center justify-between">
                     <h1 class="text-3xl font-bold text-primary-blue">Manajemen Badge</h1>
@@ -235,15 +226,13 @@
                 </div>
             </div>
 
-            <!-- Journals Management -->
             <div id="page-journals" class="page-content hidden">
                 <h1 class="mb-6 text-3xl font-bold text-primary-blue">Moderasi Jurnal</h1>
                 
                 <div id="journal-list" class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    </div>
                 </div>
             </div>
-            <!-- Suggestions Management -->
+
             <div id="page-suggestions" class="page-content hidden">
                 <h1 class="mb-6 text-3xl font-bold text-primary-blue">Manajemen Saran Lokasi</h1>
                 <div class="overflow-hidden rounded-lg bg-white shadow">
@@ -258,8 +247,7 @@
                             </tr>
                         </thead>
                         <tbody id="suggestion-table-body" class="divide-y divide-gray-200 bg-white">
-                            <!-- Data akan diisi oleh JavaScript -->
-                        </tbody>
+                            </tbody>
                     </table>
                 </div>
             </div>
@@ -267,7 +255,6 @@
         </main>
     </div>
 
-    <!-- Mission Modal -->
     <div id="mission-modal" class="pointer-events-none fixed inset-0 z-50 flex items-center justify-center overflow-y-auto opacity-0 transition-opacity duration-300">
         <div class="absolute inset-0 bg-gray-800 bg-opacity-75"></div>
         <form id="mission-form" class="relative z-10 w-full max-w-3xl scale-95 transform rounded-lg bg-white shadow-xl transition-all duration-300">
@@ -386,7 +373,6 @@
         </form>
     </div>
 
-    <!-- Clue Modal -->
     <div id="clue-modal" class="pointer-events-none fixed inset-0 z-50 flex items-center justify-center overflow-y-auto opacity-0 transition-opacity duration-300">
         <div class="absolute inset-0 bg-gray-800 bg-opacity-75"></div>
         <form id="clue-form" class="relative z-10 w-full max-w-3xl scale-95 transform rounded-lg bg-white shadow-xl transition-all duration-300">
@@ -489,7 +475,6 @@
         </form>
     </div>
 
-    <!-- Badge Modal -->
     <div id="badge-modal" class="pointer-events-none fixed inset-0 z-50 flex items-center justify-center overflow-y-auto opacity-0 transition-opacity duration-300">
         <div class="absolute inset-0 bg-gray-800 bg-opacity-75"></div>
         <form id="badge-form" class="relative z-10 w-full max-w-2xl scale-95 transform rounded-lg bg-white shadow-xl transition-all duration-300">
@@ -577,7 +562,6 @@
             </div>
         </form>
     </div>
-    <!-- TAMBAHAN BARU: Suggestion Modal (untuk lihat detail & ubah status) -->
     <div id="suggestion-modal" class="pointer-events-none fixed inset-0 z-50 flex items-center justify-center overflow-y-auto opacity-0 transition-opacity duration-300">
         <div class="absolute inset-0 bg-gray-800 bg-opacity-75"></div>
         <form id="suggestion-form" class="relative z-10 w-full max-w-2xl scale-95 transform rounded-lg bg-white shadow-xl transition-all duration-300">
@@ -635,8 +619,6 @@
     </div>
 
     <script>
-        // --- PERBAIKAN: API_URL diubah ke /api (relatif) ---
-        // Ini akan berfungsi baik di localhost:5000/admin maupun di production
         const API_URL = '/api';
         let token = null;
         let currentEditingId = null;
@@ -658,7 +640,6 @@
             const password = document.getElementById('password').value;
 
             try {
-                // --- PERBAIKAN: Menggunakan URL relatif ---
                 const response = await fetch(`${API_URL}/auth/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -754,10 +735,9 @@
             return data;
         }
 
-        // ========== DASHBOARD (DIPERBARUI) ==========
+        // ========== DASHBOARD ==========
         async function loadDashboard() {
             try {
-                // --- PERBAIKAN: Panggil endpoint admin/stats ---
                 const data = await apiRequest('/admin/stats');
                 
                 if (data.stats) {
@@ -767,9 +747,8 @@
                     document.getElementById('stat-badges').textContent = data.stats.totalBadges || 0;
                 }
 
-                // --- PERBAIKAN: Tampilkan recent activity ---
                 const activityDiv = document.getElementById('recent-activity');
-                activityDiv.innerHTML = ''; // Kosongkan
+                activityDiv.innerHTML = '';
                 
                 if (data.recentActivity) {
                     data.recentActivity.completions?.forEach(comp => {
@@ -789,7 +768,7 @@
             }
         }
 
-        // ========== MISSIONS MANAGEMENT (DIPERBARUI) ==========
+        // ========== MISSIONS MANAGEMENT ==========
         const missionModal = document.getElementById('mission-modal');
         const missionForm = document.getElementById('mission-form');
         const missionTableBody = document.getElementById('mission-table-body');
@@ -848,13 +827,11 @@
 
             try {
                 if (currentEditingId) {
-                    // Panggil endpoint /api/missions/:id (PUT)
                     await apiRequest(`/missions/${currentEditingId}`, {
                         method: 'PUT',
                         body: JSON.stringify(data)
                     });
                 } else {
-                    // Panggil endpoint /api/missions (POST)
                     await apiRequest('/missions', {
                         method: 'POST',
                         body: JSON.stringify(data)
@@ -863,7 +840,7 @@
 
                 hideMissionModal();
                 loadMissions();
-                loadDashboard(); // Update stats
+                loadDashboard();
             } catch (error) {
                 document.getElementById('mission-form-error').textContent = error.message;
                 document.getElementById('mission-form-error').classList.remove('hidden');
@@ -872,7 +849,6 @@
 
         async function loadMissions() {
             try {
-                // --- PERBAIKAN: Baca 'data' langsung sebagai array ---
                 const missions = await apiRequest('/missions') || [];
                 
                 missionTableBody.innerHTML = '';
@@ -912,7 +888,6 @@
 
         window.editMission = async (id) => {
             try {
-                // Endpoint /api/missions/:id (GET)
                 const mission = await apiRequest(`/missions/${id}`);
                 showMissionModal(mission);
             } catch (error) {
@@ -924,10 +899,9 @@
             if (!window.confirm('Apakah Anda yakin ingin menghapus misi ini? Ini akan menghapus semua clue terkait.')) return;
 
             try {
-                // Endpoint /api/missions/:id (DELETE)
                 await apiRequest(`/missions/${id}`, { method: 'DELETE' });
                 loadMissions();
-                loadDashboard(); // Update stats
+                loadDashboard();
             } catch (error) {
                 alert('Error: ' + error.message);
             }
@@ -956,17 +930,14 @@
                     clueMissionFilter.innerHTML += `<option value="${m.id}">${m.name}</option>`;
                 });
 
-                // Load all clues
                 const clues = [];
                 for (const mission of missions) {
                     try {
-                        // Endpoint /api/tracking/mission/:id (GET)
                         const data = await apiRequest(`/tracking/mission/${mission.id}`);
                         if (data.clues) {
                             clues.push(...data.clues.map(c => ({ ...c, missionName: mission.name })));
                         }
                     } catch (e) {
-                        // Misi mungkin belum punya clue, tidak apa-apa
                     }
                 }
                 renderClues(clues);
@@ -1033,7 +1004,6 @@
             data.is_required = data.is_required === 'true';
 
             try {
-                // Endpoint /api/tracking/missions/:id/clues (POST)
                 await apiRequest(`/tracking/missions/${missionId}/clues`, {
                     method: 'POST',
                     body: JSON.stringify(data)
@@ -1050,7 +1020,6 @@
         window.deleteClue = async (id) => {
             if (!window.confirm('Apakah Anda yakin ingin menghapus clue ini?')) return;
             try {
-                // Endpoint /api/admin/clues/:id (DELETE)
                 await apiRequest(`/admin/clues/${id}`, { method: 'DELETE' });
                 loadClues();
             } catch (error) {
@@ -1058,11 +1027,10 @@
             }
         };
 
-        // ========== USERS MANAGEMENT (DIPERBARUI) ==========
+        // ========== USERS MANAGEMENT ==========
         async function loadUsers() {
             const userTableBody = document.getElementById('user-table-body');
             try {
-                // --- PERBAIKAN: Implementasi fungsi ---
                 const data = await apiRequest('/admin/users');
                 const users = data.users || [];
                 
@@ -1100,16 +1068,15 @@
         window.deleteUser = async (id) => {
             if (!window.confirm('Apakah Anda yakin ingin menghapus user ini?')) return;
             try {
-                // Endpoint /api/admin/users/:id (DELETE)
                 await apiRequest(`/admin/users/${id}`, { method: 'DELETE' });
                 loadUsers();
-                loadDashboard(); // Update stats
+                loadDashboard();
             } catch (error) {
                 alert('Error: ' + error.message);
             }
         };
 
-        // ========== BADGES MANAGEMENT (DIPERBARUI) ==========
+        // ========== BADGES MANAGEMENT ==========
         const badgeModal = document.getElementById('badge-modal');
         const badgeForm = document.getElementById('badge-form');
 
@@ -1119,8 +1086,6 @@
 
         async function loadBadges() {
             try {
-                // --- PERBAIKAN: Baca 'data' langsung sebagai array ---
-                // Panggil endpoint /api/profile/badges (GET)
                 const badges = await apiRequest('/profile/badges') || [];
                 
                 const badgeList = document.getElementById('badge-list');
@@ -1163,7 +1128,6 @@
             document.getElementById('badge-form-error').classList.add('hidden');
 
             if (badge) {
-                // Fitur edit belum diimplementasi di backend
             } else {
                 document.getElementById('badge-modal-title').textContent = 'Tambah Badge Baru';
             }
@@ -1189,14 +1153,13 @@
             }
 
             try {
-                // Panggil endpoint /api/admin/badges (POST)
                 await apiRequest('/admin/badges', {
                     method: 'POST',
                     body: JSON.stringify(data)
                 });
                 hideBadgeModal();
                 loadBadges();
-                loadDashboard(); // Update stats
+                loadDashboard();
             } catch (error) {
                 document.getElementById('badge-form-error').textContent = error.message;
                 document.getElementById('badge-form-error').classList.remove('hidden');
@@ -1206,126 +1169,126 @@
         window.deleteBadge = async (id) => {
             if (!window.confirm('Apakah Anda yakin ingin menghapus badge ini?')) return;
             try {
-                // Panggil endpoint /api/admin/badges/:id (DELETE)
                 await apiRequest(`/admin/badges/${id}`, { method: 'DELETE' });
                 loadBadges();
-                loadDashboard(); // Update stats
+                loadDashboard();
             } catch (error) {
                 alert('Error: ' + error.message);
             }
         };
 
+        // ========== JOURNALS MANAGEMENT ==========
         async function loadJournals() {
-    try {
-        const journals = await apiRequest('/journals') || [];
-        
-        const journalList = document.getElementById('journal-list');
-        journalList.innerHTML = '';
-        
-        if (journals.length === 0) {
-            journalList.innerHTML = `
-                <div class="col-span-full flex flex-col items-center justify-center py-12 text-gray-500">
-                    <svg class="mb-4 h-16 w-16 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                    </svg>
-                    <p class="text-lg font-medium">Belum ada jurnal yang dibuat.</p>
-                </div>
-            `;
-        } else {
-            journals.forEach(journal => {
-                const div = document.createElement('div');
-                div.className = 'group relative flex flex-col overflow-hidden rounded-xl bg-white shadow-sm transition-all hover:shadow-md border border-gray-200';
+            try {
+                const journals = await apiRequest('/journals') || [];
                 
-                const date = new Date(journal.date).toLocaleDateString('id-ID', { 
-                    day: 'numeric', month: 'short', year: 'numeric' 
-                });
-
-                const userName = journal.user ? journal.user.name : 'Pengguna Kenala'; 
-                const userEmail = journal.user ? journal.user.email : '';
-
-                let imageHtml = '';
-                if (journal.image_url) {
-                    imageHtml = `
-                        <div class="relative h-48 w-full overflow-hidden bg-gray-100">
-                            <img src="${journal.image_url}" alt="${journal.title}" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-60"></div>
+                const journalList = document.getElementById('journal-list');
+                journalList.innerHTML = '';
+                
+                if (journals.length === 0) {
+                    journalList.innerHTML = `
+                        <div class="col-span-full flex flex-col items-center justify-center py-12 text-gray-500">
+                            <svg class="mb-4 h-16 w-16 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                            <p class="text-lg font-medium">Belum ada jurnal yang dibuat.</p>
                         </div>
                     `;
                 } else {
-                    imageHtml = `
-                        <div class="h-24 w-full bg-gradient-to-r from-blue-600 to-blue-800 opacity-90"></div>
-                    `;
-                }
+                    journals.forEach(journal => {
+                        const div = document.createElement('div');
+                        div.className = 'group relative flex flex-col overflow-hidden rounded-xl bg-white shadow-sm transition-all hover:shadow-md border border-gray-200';
+                        
+                        const date = new Date(journal.date).toLocaleDateString('id-ID', { 
+                            day: 'numeric', month: 'short', year: 'numeric' 
+                        });
 
-                div.innerHTML = `
-                    ${imageHtml}
-                    
-                    <div class="flex flex-1 flex-col p-5">
-                        <div class="mb-3 flex items-center justify-between text-xs text-gray-500">
-                            <div class="flex items-center space-x-2">
-                                <span class="flex items-center rounded-full bg-blue-50 px-2 py-1 text-blue-700 font-medium">
-                                    <svg class="mr-1 h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                                    ${journal.location_name || 'Lokasi tidak ada'}
-                                </span>
-                            </div>
-                            <span>${date}</span>
-                        </div>
+                        const userName = journal.user ? journal.user.name : 'Pengguna Kenala'; 
+                        const userEmail = journal.user ? journal.user.email : '';
 
-                        <h3 class="mb-2 text-lg font-bold text-gray-900 line-clamp-1" title="${journal.title}">
-                            ${journal.title}
-                        </h3>
-
-                        <p class="mb-4 flex-1 text-sm leading-relaxed text-gray-600 line-clamp-3">
-                            ${journal.story}
-                        </p>
-
-                        <div class="mt-auto flex items-center justify-between border-t border-gray-100 pt-4">
-                            <div class="flex items-center space-x-2">
-                                <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-xs font-bold text-gray-600">
-                                    ${userName.charAt(0).toUpperCase()}
+                        let imageHtml = '';
+                        if (journal.image_url) {
+                            imageHtml = `
+                                <div class="relative h-48 w-full overflow-hidden bg-gray-100">
+                                    <img src="${journal.image_url}" alt="${journal.title}" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-60"></div>
                                 </div>
-                                <div class="flex flex-col">
-                                    <span class="text-xs font-semibold text-gray-900">${userName}</span>
-                                    <span class="text-[10px] text-gray-500">${userEmail}</span>
-                                </div>
-                            </div>
+                            `;
+                        } else {
+                            imageHtml = `
+                                <div class="h-24 w-full bg-gradient-to-r from-blue-600 to-blue-800 opacity-90"></div>
+                            `;
+                        }
+
+                        div.innerHTML = `
+                            ${imageHtml}
                             
-                            <button onclick="deleteJournal(${journal.id})" 
-                                class="rounded-full p-2 text-gray-400 hover:bg-red-50 hover:text-red-600 transition-colors"
-                                title="Hapus Jurnal">
-                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                            </button>
-                        </div>
+                            <div class="flex flex-1 flex-col p-5">
+                                <div class="mb-3 flex items-center justify-between text-xs text-gray-500">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="flex items-center rounded-full bg-blue-50 px-2 py-1 text-blue-700 font-medium">
+                                            <svg class="mr-1 h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                            ${journal.location_name || 'Lokasi tidak ada'}
+                                        </span>
+                                    </div>
+                                    <span>${date}</span>
+                                </div>
+
+                                <h3 class="mb-2 text-lg font-bold text-gray-900 line-clamp-1" title="${journal.title}">
+                                    ${journal.title}
+                                </h3>
+
+                                <p class="mb-4 flex-1 text-sm leading-relaxed text-gray-600 line-clamp-3">
+                                    ${journal.story}
+                                </p>
+
+                                <div class="mt-auto flex items-center justify-between border-t border-gray-100 pt-4">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-xs font-bold text-gray-600">
+                                            ${userName.charAt(0).toUpperCase()}
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <span class="text-xs font-semibold text-gray-900">${userName}</span>
+                                            <span class="text-[10px] text-gray-500">${userEmail}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <button onclick="deleteJournal(${journal.id})" 
+                                        class="rounded-full p-2 text-gray-400 hover:bg-red-50 hover:text-red-600 transition-colors"
+                                        title="Hapus Jurnal">
+                                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                        journalList.appendChild(div);
+                    });
+                }
+            } catch (error) {
+                console.error('Load journals error:', error);
+                document.getElementById('journal-list').innerHTML = `
+                    <div class="col-span-full p-4 text-center text-red-500 bg-red-50 rounded-lg">
+                        Gagal memuat jurnal: ${error.message}
                     </div>
                 `;
-                journalList.appendChild(div);
-            });
+            }
         }
-    } catch (error) {
-        console.error('Load journals error:', error);
-        document.getElementById('journal-list').innerHTML = `
-            <div class="col-span-full p-4 text-center text-red-500 bg-red-50 rounded-lg">
-                Gagal memuat jurnal: ${error.message}
-            </div>
-        `;
-    }
-}
 
         window.deleteJournal = async (id) => {
             if (!window.confirm('Apakah Anda yakin ingin menghapus jurnal ini?')) return;
             
             try {
-                // Panggil endpoint /api/journals/:id (DELETE)
                 await apiRequest(`/journals/${id}`, { method: 'DELETE' });
                 loadJournals();
-                loadDashboard(); // Update stats
+                loadDashboard();
             } catch (error) {
                 alert('Error: ' + error.message);
             }
         };
-        // ========== SUGGESTIONS MANAGEMENT (BARU) ==========
+
+        // ========== SUGGESTIONS MANAGEMENT ==========
         const suggestionModal = document.getElementById('suggestion-modal');
         const suggestionForm = document.getElementById('suggestion-form');
         const suggestionTableBody = document.getElementById('suggestion-table-body');
@@ -1335,7 +1298,6 @@
 
         async function loadSuggestions() {
             try {
-                // Panggil endpoint admin baru
                 const data = await apiRequest('/admin/suggestions');
                 const suggestions = data.suggestions || [];
                 
@@ -1375,7 +1337,6 @@
         
         async function showSuggestionModal(id) {
             try {
-                // Panggil endpoint admin baru
                 const data = await apiRequest(`/admin/suggestions/${id}`);
                 const suggestion = data.suggestion;
 
@@ -1410,7 +1371,6 @@
             const status = document.getElementById('suggestion-status').value;
 
             try {
-                // Panggil endpoint admin baru
                 await apiRequest(`/admin/suggestions/${currentEditingId}`, {
                     method: 'PUT',
                     body: JSON.stringify({ status: status })
@@ -1425,7 +1385,6 @@
         window.deleteSuggestion = async (id) => {
             if (!window.confirm('Apakah Anda yakin ingin menghapus saran ini?')) return;
             try {
-                // Panggil endpoint admin baru
                 await apiRequest(`/admin/suggestions/${id}`, { method: 'DELETE' });
                 loadSuggestions();
             } catch (error) {
