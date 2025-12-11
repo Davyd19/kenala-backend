@@ -35,10 +35,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(255),
       allowNull: true
     },
-    level: {
-      type: DataTypes.INTEGER,
-      defaultValue: 1
-    },
     total_missions: {
       type: DataTypes.INTEGER,
       defaultValue: 0

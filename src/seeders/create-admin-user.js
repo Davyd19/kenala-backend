@@ -10,7 +10,6 @@ module.exports = {
         name: 'Admin Kenala',
         email: 'admin@kenala.com',
         password: hashedPassword,
-        level: 99,
         is_admin: true,
         created_at: new Date(),
         updated_at: new Date()

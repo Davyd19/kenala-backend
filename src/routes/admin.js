@@ -192,12 +192,11 @@ router.put('/users/:id', async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    const { name, email, level, is_admin } = req.body;
+    const { name, email, is_admin } = req.body;
 
     await user.update({
       name: name !== undefined ? name : user.name,
       email: email !== undefined ? email : user.email,
-      level: level !== undefined ? level : user.level,
       is_admin: is_admin !== undefined ? is_admin : user.is_admin
     });
 
@@ -374,7 +373,7 @@ router.get('/analytics', async (req, res) => {
     const topUsers = await User.findAll({
       order: [['total_missions', 'DESC']],
       limit: 10,
-      attributes: ['id', 'name', 'total_missions', 'level', 'current_streak']
+      attributes: ['id', 'name', 'total_missions', 'current_streak']
     });
 
     res.json({

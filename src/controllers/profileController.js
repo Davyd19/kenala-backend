@@ -121,10 +121,8 @@ exports.getStats = async (req, res) => {
     });
 
     const stats = {
-      level: user.level,
       total_missions: user.total_missions,
       total_distance: user.total_distance,
-      // Gunakan effective streak di sini juga
       current_streak: getEffectiveStreak(user),
       longest_streak: user.longest_streak,
       total_active_days: user.total_active_days,

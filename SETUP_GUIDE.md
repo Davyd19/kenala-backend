@@ -138,7 +138,7 @@ Password: admin123
 
 ✅ **User Management**
 - View all users and their stats
-- Update user level and admin status
+- Update user admin status
 - Delete users (with protection for admins)
 
 ✅ **Badge Management**
@@ -170,7 +170,6 @@ Password: admin123
 - View user stats
 - Badge collection
 - Streak tracking
-- Level progression
 
 ✅ **Real-time Tracking**
 - GPS-based location tracking
