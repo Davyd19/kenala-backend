@@ -1,10 +1,34 @@
+const fs = require('fs');
+const path = require('path');
+
+/**
+ * Menghapus file dari sistem (misal: menghapus foto lama saat update profil)
+ * @param {string} filePath - Path relatif file yang akan dihapus
+ */
+const deleteFile = (filePath) => {
+  if (!filePath) return;
+  
+  try {
+    // Sesuaikan path ini tergantung struktur folder Anda. 
+    // Asumsi: helper ada di src/utils/ dan uploads ada di root project ../../uploads
+    const fullPath = path.join(__dirname, '../../', filePath);
+    
+    if (fs.existsSync(fullPath)) {
+      fs.unlinkSync(fullPath);
+      console.log(`File deleted: ${fullPath}`);
+    }
+  } catch (error) {
+    console.error('Error deleting file:', error);
+  }
+};
+
 /**
  * Menghitung jarak antara dua koordinat menggunakan Haversine formula
  * @param {number} lat1 - Latitude titik 1
  * @param {number} lon1 - Longitude titik 1
  * @param {number} lat2 - Latitude titik 2
  * @param {number} lon2 - Longitude titik 2
- * @returns {number} Jarak dalam meter
+ * @returns {number} Jarak dalam meter (dibulatkan)
  */
 function calculateDistance(lat1, lon1, lat2, lon2) {
   const R = 6371e3; // Radius bumi dalam meter
@@ -26,39 +50,39 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 /**
  * Mengecek apakah user sudah dalam radius clue
  * @param {number} distance - Jarak dalam meter
- * @param {number} radius - Radius deteksi dalam meter
+ * @param {number} radius - Radius deteksi dalam meter (default 30m agar lebih akurat)
  * @returns {boolean}
  */
-function isWithinRadius(distance, radius = 50) {
+function isWithinRadius(distance, radius = 30) {
   return distance <= radius;
 }
 
 /**
- * Format jarak untuk ditampilkan
+ * Format jarak untuk ditampilkan ke user
  * @param {number} meters - Jarak dalam meter
  * @returns {string} Jarak terformat (contoh: "45 m" atau "2.3 km")
  */
 function formatDistance(meters) {
   if (meters < 1000) {
-    return `${meters} m`;
+    return `${Math.round(meters)} m`;
   }
   return `${(meters / 1000).toFixed(1)} km`;
 }
 
 /**
- * Mendapatkan pesan berdasarkan jarak
+ * Mendapatkan pesan motivasi/navigasi berdasarkan sisa jarak
  * @param {number} meters - Jarak dalam meter
  * @returns {string} Pesan untuk user
  */
 function getDistanceMessage(meters) {
   if (meters < 10) {
     return 'Anda sudah sangat dekat! Lihat sekeliling Anda.';
-  } else if (meters < 50) {
-    return `Tinggal ${meters} meter lagi!`;
+  } else if (meters < 30) {
+    return `Target sudah di depan mata (${meters} meter lagi).`;
   } else if (meters < 100) {
-    return `Anda hampir sampai, ${meters} meter lagi.`;
+    return `Anda hampir sampai, tinggal ${meters} meter lagi.`;
   } else if (meters < 500) {
-    return `Masih ${formatDistance(meters)} lagi.`;
+    return `Masih ${formatDistance(meters)} lagi, tetap semangat!`;
   } else if (meters < 1000) {
     return `Jarak ${formatDistance(meters)} dari tujuan.`;
   } else {
@@ -67,6 +91,7 @@ function getDistanceMessage(meters) {
 }
 
 module.exports = {
+  deleteFile,
   calculateDistance,
   isWithinRadius,
   formatDistance,
