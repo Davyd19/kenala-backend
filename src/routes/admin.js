@@ -12,6 +12,7 @@ const {
   Suggestion
 } = require('../models');
 const { Op } = require('sequelize');
+const firebaseAdmin = require('../config/firebase'); // Import Firebase
 
 // All admin routes require admin authentication
 router.use(adminAuth);
@@ -478,4 +479,40 @@ router.delete('/suggestions/:id', async (req, res) => {
   }
 });
 
+/**
+ * @route POST /api/admin/broadcast
+ * @desc Kirim notifikasi ke SEMUA user (via topic 'all_users')
+ * @access Admin Only
+ */
+router.post('/broadcast', adminAuth, async (req, res) => {
+    try {
+        const { title, body } = req.body;
+
+        if (!title || !body) {
+            return res.status(400).json({ error: 'Title dan Body wajib diisi' });
+        }
+
+        // Buat payload pesan
+        const message = {
+            notification: {
+                title: title,
+                body: body
+            },
+            topic: 'all_users' // Kirim ke topik yang disubscribe oleh semua aplikasi Android
+        };
+
+        // Kirim via Firebase
+        const response = await firebaseAdmin.messaging().send(message);
+
+        res.json({
+            success: true,
+            message: 'Notifikasi berhasil dikirim ke seluruh user',
+            firebaseResponse: response
+        });
+
+    } catch (error) {
+        console.error('Broadcast Error:', error);
+        res.status(500).json({ error: 'Gagal mengirim broadcast', details: error.message });
+    }
+});
 module.exports = router;
