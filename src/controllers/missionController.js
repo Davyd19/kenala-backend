@@ -1,5 +1,6 @@
 const { Mission, MissionCompletion, User, Badge, UserBadge } = require('../models');
 const { Op } = require('sequelize');
+const admin = require('../config/firebase');
 
 // Helper untuk format tanggal YYYY-MM-DD
 const getToday = () => new Date().toISOString().split('T')[0];
@@ -106,7 +107,6 @@ exports.getMission = async (req, res) => {
  */
 exports.completeMission = async (req, res) => {
     try {
-        // PERBAIKAN 1: Dukung CamelCase (dari Android) dan snake_case (standard API)
         const mission_id = req.body.missionId || req.body.mission_id;
         const real_distance_meters = req.body.realDistanceMeters || req.body.real_distance_meters;
         const userId = req.user.id;
@@ -118,30 +118,25 @@ exports.completeMission = async (req, res) => {
         const mission = await Mission.findByPk(mission_id);
         if (!mission) return res.status(404).json({ error: 'Mission not found' });
 
-        // 1. Selalu catat riwayat penyelesaian baru (Log history)
         await MissionCompletion.create({
             user_id: userId,
             mission_id: mission_id,
             completed_at: new Date()
         });
 
-        // 2. Ambil data user untuk update statistik
         const user = await User.findByPk(userId);
         const today = getToday();
         const yesterday = getYesterday();
 
-        // Konversi jarak: Prioritaskan GPS HP (meters -> KM)
         let distanceToAdd = (real_distance_meters && real_distance_meters > 0) 
             ? (real_distance_meters / 1000) 
             : (mission.estimated_distance || 0);
 
-        // PERBAIKAN 2: Statistik selalu bertambah secara kumulatif
         let updateData = {
             total_missions: (user.total_missions || 0) + 1,
             total_distance: (user.total_distance || 0) + distanceToAdd
         };
 
-        // 3. Logika Streak
         if (user.last_active_date !== today) {
             updateData.total_active_days = (user.total_active_days || 0) + 1;
             updateData.current_streak = (user.last_active_date === yesterday) ? (user.current_streak + 1) : 1;
@@ -154,7 +149,6 @@ exports.completeMission = async (req, res) => {
 
         await user.update(updateData);
         
-        // 4. Cek Badge Otomatis
         const newBadges = await checkAndAwardBadges(user, mission);
 
         res.status(200).json({
@@ -169,16 +163,11 @@ exports.completeMission = async (req, res) => {
     }
 };
 
-/**
- * Fungsi internal untuk memeriksa persyaratan badge
- */
 async function checkAndAwardBadges(user, completedMission) {
     try {
-        // Reload user untuk memastikan data include badges terbaru
         await user.reload({ include: [{ model: Badge, as: 'badges' }] });
         const ownedBadgeIds = user.badges ? user.badges.map(b => b.id) : [];
 
-        // Ambil badge yang saat ini belum dimiliki user
         const badgesToCheck = await Badge.findAll({ 
             where: { id: { [Op.notIn]: ownedBadgeIds } } 
         });
@@ -199,7 +188,6 @@ async function checkAndAwardBadges(user, completedMission) {
                     if (user.current_streak >= badge.requirement_value) isQualified = true;
                     break;
                 case 'category_specific':
-                    // Hitung jumlah misi selesai spesifik kategori ini
                     if (completedMission && badge.requirement_category === completedMission.category) {
                         const count = await MissionCompletion.count({
                             where: { user_id: user.id },
@@ -213,7 +201,6 @@ async function checkAndAwardBadges(user, completedMission) {
                     }
                     break;
                 case 'journals_written':
-                    // Opsional: Cek jumlah jurnal jika diperlukan
                     const { Journal } = require('../models');
                     const journalCount = await Journal.count({ where: { user_id: user.id } });
                     if (journalCount >= badge.requirement_value) isQualified = true;
@@ -221,7 +208,6 @@ async function checkAndAwardBadges(user, completedMission) {
             }
 
             if (isQualified) {
-                // Berikan badge ke user di database (table UserBadges)
                 await user.addBadges(badge.id);
                 badgesAwarded.push({
                     id: badge.id,
@@ -238,10 +224,6 @@ async function checkAndAwardBadges(user, completedMission) {
         return [];
     }
 }
-
-// ==========================================
-// ADMIN OPERATIONS (CRUD MISI)
-// ==========================================
 
 exports.createMission = async (req, res) => {
     try {
@@ -292,5 +274,37 @@ exports.deleteMission = async (req, res) => {
     } catch (error) {
         console.error('Delete mission error:', error);
         res.status(500).json({ error: 'Failed to delete mission' });
+    }
+};
+
+exports.publishMission = async (req, res) => {
+    try {
+        const { id } = req.params; 
+        
+        const mission = await Mission.findByPk(id);
+        if (!mission) {
+            return res.status(404).json({ error: 'Mission not found' });
+        }
+
+        const message = {
+            notification: {
+                title: '🎲 Lokasi Baru Terdeteksi!',
+                body: `Lokasi "${mission.name}" baru saja masuk ke sistem! Jadilah orang pertama yang menemukannya. Coba keberuntunganmu sekarang!`
+            },
+            topic: 'all_users' 
+        };
+
+        const response = await admin.messaging().send(message);
+
+        console.log('✅ Notifikasi sukses dikirim:', response);
+        
+        res.status(200).json({ 
+            message: 'Misi berhasil dipublikasikan dan notifikasi dikirim!',
+            firebase_response: response 
+        });
+
+    } catch (error) {
+        console.error('Publish mission error:', error);
+        res.status(500).json({ error: 'Failed to publish mission: ' + error.message });
     }
 };

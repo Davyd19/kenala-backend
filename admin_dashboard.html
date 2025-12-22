@@ -872,7 +872,8 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <button onclick="editMission(${mission.id})" class="text-blue-600 hover:text-blue-900">Edit</button>
+                                <button onclick="publishMission(${mission.id})" class="text-green-600 hover:text-green-900" title="Kirim Notifikasi ke Semua User">📢 Publish</button>
+                                <button onclick="editMission(${mission.id})" class="text-blue-600 hover:text-blue-900 ml-4">Edit</button>
                                 <button onclick="deleteMission(${mission.id})" class="text-red-600 hover:text-red-900 ml-4">Hapus</button>
                             </td>
                         `;
@@ -884,6 +885,17 @@
                 missionTableBody.innerHTML = `<tr><td colspan="5" class="px-6 py-4 text-center text-red-500">Error: ${error.message}</td></tr>`;
             }
         }
+
+        // --- NEW: FUNGSI PUBLISH MISSION ---
+        window.publishMission = async (id) => {
+            if (!confirm('Apakah Anda yakin ingin mempublikasikan misi ini? Notifikasi akan dikirim ke semua user.')) return;
+            try {
+                const result = await apiRequest(`/missions/${id}/publish`, { method: 'POST' });
+                alert(result.message || 'Notifikasi berhasil dikirim!');
+            } catch (error) {
+                alert('Gagal mengirim notifikasi: ' + error.message);
+            }
+        };
 
         window.editMission = async (id) => {
             try {

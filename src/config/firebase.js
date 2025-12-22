@@ -1,18 +1,26 @@
 const admin = require('firebase-admin');
 const path = require('path');
+const fs = require('fs');
 
-// Pastikan file serviceAccountKey.json ada di root folder backend Anda
-// Download dari Firebase Console > Project Settings > Service Accounts
-try {
-    const serviceAccount = require(path.join(__dirname, '../../serviceAccountKey.json'));
+const serviceAccountPath = path.join(__dirname, '../../serviceAccountKey.json');
 
-    admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount)
-    });
+if (!fs.existsSync(serviceAccountPath)) {
+    console.error('❌ FATAL ERROR: serviceAccountKey.json tidak ditemukan!');
+    console.error('   Mohon letakkan file tersebut di root folder project.');
 
-    console.log('Firebase Admin Initialized');
-} catch (error) {
-    console.error('Firebase Admin Init Failed (Check serviceAccountKey.json):', error.message);
+} else {
+    try {
+        const serviceAccount = require(serviceAccountPath);
+
+        if (!admin.apps.length) {
+            admin.initializeApp({
+                credential: admin.credential.cert(serviceAccount)
+            });
+            console.log('✅ Firebase Admin Initialized Successfully');
+        }
+    } catch (error) {
+        console.error('❌ Firebase Init Error:', error.message);
+    }
 }
 
 module.exports = admin;
