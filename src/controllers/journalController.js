@@ -80,6 +80,44 @@ exports.createJournal = async (req, res) => {
   }
 };
 
+// Create journal dengan upload gambar langsung (multipart/form-data)
+exports.createJournalWithImage = async (req, res) => {
+  try {
+    const { title, story, mission_id, location_name, latitude, longitude } = req.body;
+    const userId = req.user.id;
+
+    if (!title || !story) {
+      return res.status(400).json({ error: 'Title and story are required' });
+    }
+
+    // Jika ada file gambar, buat URL absolut yang bisa dipakai langsung di frontend
+    let imageUrl = null;
+    if (req.file) {
+      const host = req.get('host');
+      imageUrl = `${req.protocol}://${host}/uploads/${req.file.filename}`;
+    }
+
+    const journal = await Journal.create({
+      user_id: userId,
+      title,
+      story,
+      image_url: imageUrl,
+      mission_id,
+      location_name,
+      latitude,
+      longitude,
+      date: new Date()
+    });
+
+    await checkJournalBadges(userId);
+
+    res.status(201).json(journal);
+  } catch (error) {
+    console.error('Create journal with image error:', error);
+    res.status(500).json({ error: 'Failed to create journal with image' });
+  }
+};
+
 // Fungsi helper untuk badge jurnal
 async function checkJournalBadges(userId) {
   try {
