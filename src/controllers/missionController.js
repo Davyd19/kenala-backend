@@ -287,12 +287,13 @@ exports.publishMission = async (req, res) => {
         }
 
         const message = {
-            notification: {
-                title: '🎲 Lokasi Baru Terdeteksi!',
-                body: `Lokasi "${mission.name}" baru saja masuk ke sistem! Jadilah orang pertama yang menemukannya. Coba keberuntunganmu sekarang!`
-            },
-            topic: 'all_users' 
-        };
+        data: {
+        title: '🎲 Lokasi Baru Terdeteksi!',
+        body: `Lokasi "${mission.name}" baru saja masuk ke sistem! Coba keberuntunganmu sekarang!`,
+        type: 'mission_alert' 
+         },
+        topic: 'all_users'
+};
 
         const response = await admin.messaging().send(message);
 
