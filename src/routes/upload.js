@@ -19,10 +19,10 @@ const storage = multer.diskStorage({
 
 // Filter file (hanya izinkan gambar)
 const fileFilter = (req, file, cb) => {
-  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/jpg') {
+  if (typeof file.mimetype === 'string' && file.mimetype.startsWith('image/')) {
     cb(null, true);
   } else {
-    cb(new Error('Hanya file .jpeg, .jpg, atau .png yang diizinkan'), false);
+    cb(new Error('Hanya file gambar yang diizinkan'), false);
   }
 };
 

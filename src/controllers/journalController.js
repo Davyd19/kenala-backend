@@ -93,8 +93,7 @@ exports.createJournalWithImage = async (req, res) => {
     // Jika ada file gambar, buat URL absolut yang bisa dipakai langsung di frontend
     let imageUrl = null;
     if (req.file) {
-      const host = req.get('host');
-      imageUrl = `${req.protocol}://${host}/uploads/${req.file.filename}`;
+      imageUrl = `/uploads/${req.file.filename}`;
     }
 
     const journal = await Journal.create({
