@@ -623,14 +623,12 @@
         let currentEditingId = null;
         let currentPage = 'dashboard';
 
-        // DOM Elements
         const loginScreen = document.getElementById('login-screen');
         const dashboard = document.getElementById('dashboard');
         const loginForm = document.getElementById('login-form');
         const loginError = document.getElementById('login-error');
         const logoutBtn = document.getElementById('logout-btn');
 
-        // ========== AUTHENTICATION ==========
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             loginError.classList.add('hidden');
@@ -670,7 +668,6 @@
             dashboard.classList.add('hidden');
         });
 
-        // Check for saved token
         const savedToken = localStorage.getItem('admin_token');
         if (savedToken) {
             token = savedToken;
@@ -679,7 +676,6 @@
             loadDashboard();
         }
 
-        // ========== NAVIGATION ==========
         const navLinks = document.querySelectorAll('.nav-link');
         navLinks.forEach(link => {
             link.addEventListener('click', (e) => {
@@ -707,7 +703,6 @@
             else if (page === 'suggestions') loadSuggestions();
         }
 
-        // ========== API HELPERS ==========
         async function apiRequest(endpoint, options = {}) {
             const config = {
                 ...options,
@@ -720,7 +715,6 @@
 
             const response = await fetch(`${API_URL}${endpoint}`, config);
             
-            // Handle 204 No Content (untuk delete)
             if (response.status === 204) {
                 return { success: true };
             }
@@ -734,7 +728,6 @@
             return data;
         }
 
-        // ========== DASHBOARD ==========
         async function loadDashboard() {
             try {
                 const data = await apiRequest('/admin/stats');
@@ -767,7 +760,6 @@
             }
         }
 
-        // ========== MISSIONS MANAGEMENT ==========
         const missionModal = document.getElementById('mission-modal');
         const missionForm = document.getElementById('mission-form');
         const missionTableBody = document.getElementById('mission-table-body');
@@ -886,7 +878,6 @@
             }
         }
 
-        // --- NEW: FUNGSI PUBLISH MISSION ---
         window.publishMission = async (id) => {
             if (!confirm('Apakah Anda yakin ingin mempublikasikan misi ini? Notifikasi akan dikirim ke semua user.')) return;
             try {
@@ -918,7 +909,6 @@
             }
         };
 
-        // ========== CLUES MANAGEMENT ==========
         const clueModal = document.getElementById('clue-modal');
         const clueForm = document.getElementById('clue-form');
         const clueTableBody = document.getElementById('clue-table-body');
@@ -1038,7 +1028,6 @@
             }
         };
 
-        // ========== USERS MANAGEMENT ==========
         async function loadUsers() {
             const userTableBody = document.getElementById('user-table-body');
             try {
@@ -1086,7 +1075,6 @@
             }
         };
 
-        // ========== BADGES MANAGEMENT ==========
         const badgeModal = document.getElementById('badge-modal');
         const badgeForm = document.getElementById('badge-form');
 
@@ -1187,7 +1175,6 @@
             }
         };
 
-        // ========== JOURNALS MANAGEMENT ==========
         async function loadJournals() {
             try {
                 const journals = await apiRequest('/journals') || [];
@@ -1298,7 +1285,6 @@
             }
         };
 
-        // ========== SUGGESTIONS MANAGEMENT ==========
         const suggestionModal = document.getElementById('suggestion-modal');
         const suggestionForm = document.getElementById('suggestion-form');
         const suggestionTableBody = document.getElementById('suggestion-table-body');

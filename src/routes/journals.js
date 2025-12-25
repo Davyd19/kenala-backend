@@ -5,7 +5,6 @@ const multer = require('multer');
 const journalController = require('../controllers/journalController');
 const auth = require('../middleware/auth');
 
-// Konfigurasi penyimpanan Multer khusus untuk upload jurnal+gambar
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'uploads/');
@@ -20,7 +19,7 @@ const fileFilter = (req, file, cb) => {
   if (typeof file.mimetype === 'string' && file.mimetype.startsWith('image/')) {
     cb(null, true);
   } else {
-    cb(new Error('Hanya file gambar yang diizinkan'), false);
+    cb(new Error('Format file tidak didukung'), false);
   }
 };
 
@@ -28,19 +27,16 @@ const upload = multer({
   storage,
   fileFilter,
   limits: {
-    fileSize: 1024 * 1024 * 5 // 5MB
+    fileSize: 1024 * 1024 * 5
   }
 });
 
-// All routes require authentication
 router.use(auth);
 
 router.get('/', journalController.getJournals);
 router.get('/:id', journalController.getJournal);
-router.post('/', journalController.createJournal);
-// Endpoint baru: buat jurnal + upload gambar dalam satu request (multipart/form-data)
-router.post('/with-image', upload.single('image'), journalController.createJournalWithImage);
-router.put('/:id', journalController.updateJournal);
+router.post('/', upload.single('image'), journalController.createJournal);
+router.put('/:id', upload.single('image'), journalController.updateJournal);
 router.delete('/:id', journalController.deleteJournal);
 
 module.exports = router;
